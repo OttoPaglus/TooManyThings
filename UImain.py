@@ -336,9 +336,6 @@ button_save_edit.grid(row=3, column=2, padx=5, pady=5, sticky="e")
 button_delete = Button(data_edit, text='删除任务', command=delete_task)
 button_delete.grid(row=3, column=3, padx=5, pady=5, sticky="w")
 
-
-
-
 # 添加选项卡
 note.add(data_add, text='添加待办')
 note.add(data_edit, text='修改待办')
