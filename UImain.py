@@ -238,6 +238,7 @@ def search_branch():
         conn.close()
 
 
+
 '''主窗口设置'''
 
 window = Tk()
