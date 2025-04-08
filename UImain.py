@@ -7,6 +7,7 @@ import sqlite3
 from tkinter import messagebox
 '''全局变量设置'''
 versions="2.0.0"
+version_date="2025年4月"
 current_edit_id = None
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
@@ -213,7 +214,7 @@ def on_tab_changed(event):
     # 方法1：通过选项卡文本判断
     tab_text = note.tab(current_tab, "text")
     if tab_text == "关于":  # 只对指定文本的选项卡生效
-        txt=f"本程序为待办事项管理系统，\n请在添加待办选项卡中添加待办事项，\n双击待办事项可进行修改和删除操作。\n作者：OttoPaglus\n {versions} \n日期：2025年04月"
+        txt=f"本程序为待办事项管理系统，\n请在添加待办选项卡中添加待办事项，\n双击待办事项可进行修改和删除操作。\n作者：OttoPaglus\n版本：{versions} \n日期：{version_date}"
         messagebox.showinfo("启动说明",txt)
 def search_branch():
     conn = sqlite3.connect("Thingsdatabase.db")
