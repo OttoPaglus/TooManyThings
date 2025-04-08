@@ -27,11 +27,13 @@ def load_data_to_edit(task_id):
             title_edit.delete(0, END)
             content_edit.delete('1.0', END)
             date_edit.delete(0, END)
+            branch_edit.delete(0, END)
 
             # 填充数据
             title_edit.insert(0, task_data[1])  # title字段
             content_edit.insert(END, task_data[2])  # text字段
             date_edit.insert(0, task_data[4])  # deadline字段
+            branch_edit.insert(END, task_data[6])
 
             # 设置优先级
             level_str = things_level_dic.get(task_data[5], '重要并且紧急')
@@ -57,10 +59,12 @@ def save():
     content = content_entry.get("1.0", "end-1c")  # 获取多行文本框内容
     date = date_entry.get()
     level = things_level_dic_op[level_entry.get()]
+    branch = branch_entry.get()
     # 清空输入框
     title_entry.delete(0, 'end')
     content_entry.delete('1.0', 'end')
     date_entry.delete(0, 'end')
+    branch_entry.delete(0, 'end')
     level_entry.set('')  # 清空选择框
 
     # 显示保存成功提示
@@ -70,8 +74,8 @@ def save():
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
         # 使用参数化查询插入数据
-        cursor.execute("INSERT INTO Thingstable(title,deadline,text,level,isfinished) VALUES (?, ?, ? ,? ,?)",
-                       (title,date, content, level, False))
+        cursor.execute("INSERT INTO Thingstable(title,deadline,text,level,isfinished,branch) VALUES (?, ?, ? ,? ,?,?)",
+                       (title,date, content, level, False, branch))
         conn.commit()
         messagebox.showinfo("成功", "成功保存到数据库！")
         update_treeview(None)
@@ -89,14 +93,15 @@ def update_task():
     deadline = date_edit.get()
     level = things_level_dic_op[level_edit.get()]
     isfinish = 1 if finish_edit.get() == '已完成' else 0
+    branch = branch_edit.get()
 
     try:
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
         cursor.execute("""UPDATE Thingstable 
-                        SET title=?, text=?, deadline=?, level=?, isfinished=?
+                        SET title=?, text=?, deadline=?, level=?, isfinished=?,branch=?
                         WHERE id=?""",
-                       (title, content, deadline, level, isfinish, current_edit_id))
+                       (title, content, deadline, level, isfinish,branch, current_edit_id))
         conn.commit()
 
         # 更新显示
@@ -213,6 +218,26 @@ def on_tab_changed(event):
     if tab_text == "关于":  # 只对指定文本的选项卡生效
         messagebox.showinfo("启动说明",
                         "本程序为待办事项管理系统，\n请在添加待办选项卡中添加待办事项，\n双击待办事项可进行修改和删除操作。\n作者：OttoPaglus\n版本：v1.0\n日期：2025年04月")
+def search_branch():
+    conn = sqlite3.connect("Thingsdatabase.db")
+    cursor = conn.cursor()
+    branch = branch_search.get()
+    for item in txtree.get_children():
+        txtree.delete(item)
+    try:
+        cursor.execute("SELECT id, title, deadline FROM Thingstable WHERE branch=?", (branch,))
+        for row in cursor.fetchall():
+            txtree.insert('', 'end',
+                          values=(row[1], row[2]),  # 显示标题和截止日期
+                          tags=(row[0],))  # 存储ID到tags属性
+    except sqlite3.Error as e:
+        messagebox.showerror("错误", f"加载数据失败:\n{str(e)}")
+    finally:
+        combo.current(7)
+        cursor.close()
+        conn.close()
+
+
 '''主窗口设置'''
 
 window = Tk()
@@ -227,7 +252,7 @@ window.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
 
 #不同分类设置
 combo = Combobox(window)
-combo['values'] = ('今日待办事项','全部待办事项','重要并且紧急','不重要但紧急','重要但不紧急','不重要不紧急','已经完成事项')
+combo['values'] = ('今日待办事项','全部待办事项','重要并且紧急','不重要但紧急','重要但不紧急','不重要不紧急','已经完成事项','查找结果展示')
 combo['state'] = 'readonly'
 combo.current(0)
 combo.grid(column=0, row=0, rowspan=2, sticky="w")
@@ -256,14 +281,10 @@ note.grid(column=0, row=3, columnspan=2, sticky="nsew")
 # 添加选项卡的 Frame
 data_add = Frame(note)
 data_edit = Frame(note)
+data_search = Frame(note)
 about_about= Frame(note)
-'''data_add模块设置'''
 
-# 配置 data_add 的网格布局
-data_add.grid_columnconfigure(1, weight=1)  # 第1列自动扩展
-data_add.grid_columnconfigure(2, weight=1)  # 新增列
-data_add.grid_columnconfigure(3, weight=1)  # 新增列
-data_add.grid_columnconfigure(4, weight=1)  # 新增列
+'''data_add模块设置'''
 
 # 标题输入（占据3列）
 Label(data_add, text='  标题:', font=("等线", 15)).grid(row=0, column=0, padx=5, pady=5, sticky="w")
@@ -287,16 +308,16 @@ level_entry['state'] = 'readonly'
 level_entry.current(0)
 level_entry.grid(row=2, column=3, sticky="nw", padx=5, pady=5)
 
+#分支从属设置
+Label(data_add,text="分支从属:",font=('等线',15)).grid(row=3, column=0, padx=5, pady=5, sticky="nw")
+branch_entry = Entry(data_add)
+branch_entry.grid(row=3, column=1, sticky="nsew",padx=5, pady=5)
+
 #保存按钮设置
 button_save_add=Button(data_add,text='保存',command=save)
-button_save_add.grid(row=3, column=2, sticky="ne",padx=5, pady=5)
+button_save_add.grid(row=4, column=2, sticky="ne",padx=5, pady=5)
 
 '''data_edit模块设置'''
-
-data_edit.grid_columnconfigure(1, weight=1)  # 第1列自动扩展
-data_edit.grid_columnconfigure(2, weight=1)  # 新增列
-data_edit.grid_columnconfigure(3, weight=1)  # 新增列
-data_edit.grid_columnconfigure(4, weight=1)  # 新增列
 
 # 标题输入（占据3列）
 Label(data_edit, text='  标题:', font=("等线", 15)).grid(row=0, column=0, padx=5, pady=5, sticky="w")
@@ -322,23 +343,35 @@ level_edit['state'] = 'readonly'
 level_edit.current(0)
 level_edit.grid(row=2, column=3, sticky="nw", padx=5, pady=5)
 
+#分支从属设置
+Label(data_edit,text="分支从属:",font=('等线',15)).grid(row=3, column=0, padx=5, pady=5, sticky="nw")
+branch_edit = Entry(data_edit)
+branch_edit.grid(row=3, column=1, padx=5, pady=5,sticky="nsew")
+
 #完成情况输入
-Label(data_edit,text='完成情况:',font=('等线',15)).grid(row=3, column=0, padx=5, pady=5, sticky="nw")
+Label(data_edit,text='   完成情况:',font=('等线',15)).grid(row=3, column=2, padx=5, pady=5, sticky="nw")
 finish_edit = Combobox(data_edit)
 finish_edit['values']=('已完成','未完成')
 finish_edit['state'] = 'readonly'
 finish_edit.current(0)
-finish_edit.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+finish_edit.grid(row=3, column=3, padx=5, pady=5, sticky="w")
 
 #保存按钮设置
 button_save_edit=Button(data_edit,text='保存修改',command=update_task)
-button_save_edit.grid(row=3, column=2, padx=5, pady=5, sticky="e")
+button_save_edit.grid(row=4, column=2, padx=5, pady=5, sticky="e")
 button_delete = Button(data_edit, text='删除任务', command=delete_task)
-button_delete.grid(row=3, column=3, padx=5, pady=5, sticky="w")
+button_delete.grid(row=4, column=3, padx=5, pady=5, sticky="w")
 
+'''data_search 选项卡设置'''
+Label(data_search,text='按分支查找',font=('等线',15)).grid(row=0, column=0, padx=5, pady=5, sticky="nw")
+branch_search = Entry(data_search)
+branch_search.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
+button_search=Button(data_search,text='搜索',command=search_branch)
+button_search.grid(row=0, column=3, padx=5, pady=5, sticky="e")
 # 添加选项卡
 note.add(data_add, text='添加待办')
 note.add(data_edit, text='修改待办')
+note.add(data_search,text="搜索待办")
 note.add(about_about,text='关于')
 note.bind("<<NotebookTabChanged>>", on_tab_changed)
 window.mainloop()
