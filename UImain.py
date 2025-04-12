@@ -1,17 +1,24 @@
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import scrolledtext
+from tkinter import filedialog
 import time
 import datetime
 import sqlite3
 from tkinter import messagebox
+import shutil
+import os
+from PIL import Image, ImageTk
+
 '''全局变量设置'''
-versions="2.0.0"
+versions="2.0.1"
 version_date="2025年4月"
 current_edit_id = None
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
-
+datafiles=r'\todofiles'
+once_id=0
+path_=""
 def load_data_to_edit(task_id):
     """将数据加载到编辑表单"""
     conn = sqlite3.connect("Thingsdatabase.db")
@@ -29,7 +36,9 @@ def load_data_to_edit(task_id):
             content_edit.delete('1.0', END)
             date_edit.delete(0, END)
             branch_edit.delete(0, END)
+            #path.set("")
 
+            time.sleep(0.1)
             # 填充数据
             title_edit.insert(0, task_data[1])  # title字段
             content_edit.insert(END, task_data[2])  # text字段
@@ -52,8 +61,20 @@ def load_data_to_edit(task_id):
     finally:
         cursor.close()
         conn.close()
-
-
+def file_update():
+    global path_
+    path_=filedialog.askopenfilename()
+    path_=path_.replace("/","\\\\")
+    path.set(path_)
+def file_save(title):
+    pathin=path.get()
+    if pathin:
+        filename = os.path.basename(pathin)
+        oldext=os.path.splitext(filename)[1]
+        os.rename(filename, title+oldext)#rename函数报错：系统找不到指定的文件。: '05247859b4e069675bdd83de5c6bb71.jpg' -> 'qw.jpg'
+        newlocation=os.path.dirname(pathin)+title+oldext
+        shutil.move(pathin, datafiles)
+        return os.path.join(newlocation)
 def save():
     # 获取各输入框的值
     title = title_entry.get()
@@ -61,19 +82,23 @@ def save():
     date = date_entry.get()
     level = things_level_dic_op[level_entry.get()]
     branch = branch_entry.get()
+    location=path_
+    #location = file_save(title)
+
     # 清空输入框
     title_entry.delete(0, 'end')
     content_entry.delete('1.0', 'end')
     date_entry.delete(0, 'end')
     branch_entry.delete(0, 'end')
     level_entry.set('')  # 清空选择框
+
     # 数据库操作部分
     try:
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
         # 使用参数化查询插入数据
-        cursor.execute("INSERT INTO Thingstable(title,deadline,text,level,isfinished,branch) VALUES (?, ?, ? ,? ,?,?)",
-                       (title,date, content, level, False, branch))
+        cursor.execute("INSERT INTO Thingstable(title,deadline,text,level,isfinished,branch,file) VALUES (?, ?, ? ,? ,?,?,?)",
+                       (title,date, content, level, False, branch,location))
         conn.commit()
         messagebox.showinfo("成功", "成功保存到数据库！")
         update_treeview(None)
@@ -92,14 +117,15 @@ def update_task():
     level = things_level_dic_op[level_edit.get()]
     isfinish = 1 if finish_edit.get() == '已完成' else 0
     branch = branch_edit.get()
+    file=path_
 
     try:
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
         cursor.execute("""UPDATE Thingstable 
-                        SET title=?, text=?, deadline=?, level=?, isfinished=?,branch=?
+                        SET title=?, text=?, deadline=?, level=?, isfinished=?,branch=?,file=? 
                         WHERE id=?""",
-                       (title, content, deadline, level, isfinish,branch, current_edit_id))
+                       (title, content, deadline, level, isfinish,branch,file,current_edit_id))
         conn.commit()
 
         # 更新显示
@@ -244,8 +270,8 @@ window.title("TooManyThings")
 screen_width = window.winfo_screenwidth()
 screen_height = window.winfo_screenheight()
 x = (screen_width // 2) - (700 // 2)
-y = (screen_height // 2) - (500// 2)
-window.geometry(f"{700}x{500}+{x}+{y}")
+y = (screen_height // 2) - (600// 2)
+window.geometry(f"{700}x{600}+{x}+{y}")
 window.grid_columnconfigure(1, weight=1)  # 允许列自动扩展
 window.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
 
@@ -283,6 +309,7 @@ data_edit = Frame(note)
 data_search = Frame(note)
 about_about= Frame(note)
 
+path = StringVar()
 '''data_add模块设置'''
 
 # 标题输入（占据3列）
@@ -312,9 +339,14 @@ Label(data_add,text="分支从属:",font=('等线',15)).grid(row=3, column=0, pa
 branch_entry = Entry(data_add)
 branch_entry.grid(row=3, column=1, sticky="nsew",padx=5, pady=5)
 
+#附件上传设置
+Label(data_add,text="上传文件路径:",font=('等线',15)).grid(row=4, column=0, padx=5, pady=5, sticky="nw")
+files_entry=Entry(data_add,textvariable=path).grid(row=4, column=1, padx=5, pady=5,sticky="nw")
+Button(data_add,text="选择文件",command=file_update).grid(row=4, column=2, padx=5, pady=5,sticky="nw")
+
 #保存按钮设置
 button_save_add=Button(data_add,text='保存',command=save)
-button_save_add.grid(row=4, column=2, sticky="ne",padx=5, pady=5)
+button_save_add.grid(row=5, column=2, sticky="ne",padx=5, pady=5)
 
 '''data_edit模块设置'''
 
@@ -355,11 +387,16 @@ finish_edit['state'] = 'readonly'
 finish_edit.current(0)
 finish_edit.grid(row=3, column=3, padx=5, pady=5, sticky="w")
 
+#附件上传设置
+Label(data_edit,text="上传文件路径:",font=('等线',15)).grid(row=4, column=0, padx=5, pady=5, sticky="nw")
+files_edit=Entry(data_edit,textvariable=path).grid(row=4, column=1, padx=5, pady=5,sticky="nw")
+Button(data_edit,text="选择文件",command=file_update).grid(row=4, column=2, padx=5, pady=5,sticky="nw")
+
 #保存按钮设置
 button_save_edit=Button(data_edit,text='保存修改',command=update_task)
-button_save_edit.grid(row=4, column=2, padx=5, pady=5, sticky="e")
+button_save_edit.grid(row=5, column=2, padx=5, pady=5, sticky="e")
 button_delete = Button(data_edit, text='删除任务', command=delete_task)
-button_delete.grid(row=4, column=3, padx=5, pady=5, sticky="w")
+button_delete.grid(row=5, column=3, padx=5, pady=5, sticky="w")
 
 '''data_search 选项卡设置'''
 Label(data_search,text='按分支查找',font=('等线',15)).grid(row=0, column=0, padx=5, pady=5, sticky="nw")
