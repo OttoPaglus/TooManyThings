@@ -12,6 +12,7 @@ import os
 from PIL import Image, ImageTk
 import subprocess
 
+
 '''全局变量设置'''
 versions="2.0.2"
 version_date="2025年4月"
