@@ -1,3 +1,4 @@
+import sys
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import scrolledtext
@@ -9,9 +10,10 @@ from tkinter import messagebox
 import shutil
 import os
 from PIL import Image, ImageTk
+import subprocess
 
 '''全局变量设置'''
-versions="2.0.1"
+versions="2.0.2"
 version_date="2025年4月"
 current_edit_id = None
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
@@ -59,80 +61,88 @@ def load_data_to_edit(task_id):
     except sqlite3.Error as e:
         messagebox.showerror("错误", f"加载数据失败:\n{str(e)}")
     finally:
+        # 设置文件路径输入框
+        file_entry_edit.delete(0, END)
+        file_entry_edit.insert(0, task_data[7] if task_data[7] else "")
         cursor.close()
         conn.close()
-def file_update():
-    global path_
-    path_=filedialog.askopenfilename()
-    path_=path_.replace("/","\\\\")
-    path.set(path_)
-def file_save(title):
-    pathin=path.get()
-    if pathin:
-        filename = os.path.basename(pathin)
-        oldext=os.path.splitext(filename)[1]
-        os.rename(filename, title+oldext)#rename函数报错：系统找不到指定的文件。: '05247859b4e069675bdd83de5c6bb71.jpg' -> 'qw.jpg'
-        newlocation=os.path.dirname(pathin)+title+oldext
-        shutil.move(pathin, datafiles)
-        return os.path.join(newlocation)
+def file_update(entry_widget):
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        entry_widget.delete(0, END)
+        entry_widget.insert(0, file_path)
+
+def file_save(file_path):
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError("文件路径无效，请重新选择有效的文件。")
+    return file_path
+
 def save():
-    # 获取各输入框的值
     title = title_entry.get()
-    content = content_entry.get("1.0", "end-1c")  # 获取多行文本框内容
+    content = content_entry.get("1.0", "end-1c")
     date = date_entry.get()
     level = things_level_dic_op[level_entry.get()]
     branch = branch_entry.get()
-    location=path_
-    #location = file_save(title)
+    file_path = file_entry_add.get()
+    location = file_save(file_path)
+
+    try:
+        location = file_save(title)
+    except FileNotFoundError as fe:
+        messagebox.showerror("文件错误", str(fe))
+        return  # 不保存，直接返回
 
     # 清空输入框
     title_entry.delete(0, 'end')
     content_entry.delete('1.0', 'end')
     date_entry.delete(0, 'end')
     branch_entry.delete(0, 'end')
-    level_entry.set('')  # 清空选择框
+    level_entry.set('')
 
-    # 数据库操作部分
     try:
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
-        # 使用参数化查询插入数据
-        cursor.execute("INSERT INTO Thingstable(title,deadline,text,level,isfinished,branch,file) VALUES (?, ?, ? ,? ,?,?,?)",
-                       (title,date, content, level, False, branch,location))
+        cursor.execute("INSERT INTO Thingstable(title, deadline, text, level, isfinished, branch, file) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                       (title, date, content, level, False, branch, location))
         conn.commit()
         messagebox.showinfo("成功", "成功保存到数据库！")
         update_treeview(None)
     except sqlite3.Error as e:
-        messagebox.showerror("错误", f"加载数据失败:\n{str(e)}")
+        messagebox.showerror("数据库错误", f"保存失败:\n{str(e)}")
     finally:
+        file_entry_add.delete(0, END)  # 在 save() 成功后清空
         if conn:
             conn.close()
 
-
 def update_task():
-    # 获取输入数据
     title = title_edit.get()
     content = content_edit.get("1.0", "end-1c")
     deadline = date_edit.get()
     level = things_level_dic_op[level_edit.get()]
     isfinish = 1 if finish_edit.get() == '已完成' else 0
     branch = branch_edit.get()
-    file=path_
+    file_path = file_entry_edit.get()
+    location = file_save(file_path)
+
+    file_path = file_entry_edit.get()
+    try:
+        location = file_save(file_path)
+    except FileNotFoundError as fe:
+        messagebox.showerror("文件错误", str(fe))
+        return
 
     try:
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
         cursor.execute("""UPDATE Thingstable 
-                        SET title=?, text=?, deadline=?, level=?, isfinished=?,branch=?,file=? 
-                        WHERE id=?""",
-                       (title, content, deadline, level, isfinish,branch,file,current_edit_id))
+                          SET title=?, text=?, deadline=?, level=?, isfinished=?, branch=?, file=? 
+                          WHERE id=?""",
+                       (title, content, deadline, level, isfinish, branch, location, current_edit_id))
         conn.commit()
 
-        # 更新显示
         update_treeview(None)
-        note.select(data_add)  # 切换回添加选项卡
+        note.select(data_add)
 
-        # 清除编辑数据
         title_edit.delete(0, END)
         content_edit.delete('1.0', END)
         date_edit.delete(0, END)
@@ -140,10 +150,10 @@ def update_task():
         finish_edit.set('')
 
         messagebox.showinfo("成功", "任务更新成功！")
-        update_treeview(None)
-    except Exception as e:
-        messagebox.showerror("错误", f"加载数据失败:\n{str(e)}")
+    except sqlite3.Error as e:
+        messagebox.showerror("数据库错误", f"更新失败:\n{str(e)}")
     finally:
+        file_entry_edit.delete(0, END)  # 在 update_task() 成功后清空
         if conn:
             conn.close()
 
@@ -196,6 +206,22 @@ def delete_task():
         if conn:
             conn.close()
         current_edit_id = None
+
+def open_file(entry_widget):
+    file_path = entry_widget.get()
+    if not os.path.isfile(file_path):
+        messagebox.showerror("错误", "文件路径无效或文件不存在，请检查路径")
+        return
+    try:
+        if os.name == 'nt':  # Windows
+            os.startfile(file_path)
+        elif os.name == 'posix':  # macOS/Linux
+            opener = 'open' if sys.platform == 'darwin' else 'xdg-open'
+            subprocess.run([opener, file_path])
+        else:
+            messagebox.showwarning("不支持", "当前系统暂不支持打开文件操作")
+    except Exception as e:
+        messagebox.showerror("打开失败", f"无法打开文件:\n{str(e)}")
 
 def update_treeview(event):
     # 清空当前表格数据
@@ -309,7 +335,6 @@ data_edit = Frame(note)
 data_search = Frame(note)
 about_about= Frame(note)
 
-path = StringVar()
 '''data_add模块设置'''
 
 # 标题输入（占据3列）
@@ -341,8 +366,9 @@ branch_entry.grid(row=3, column=1, sticky="nsew",padx=5, pady=5)
 
 #附件上传设置
 Label(data_add,text="上传文件路径:",font=('等线',15)).grid(row=4, column=0, padx=5, pady=5, sticky="nw")
-files_entry=Entry(data_add,textvariable=path).grid(row=4, column=1, padx=5, pady=5,sticky="nw")
-Button(data_add,text="选择文件",command=file_update).grid(row=4, column=2, padx=5, pady=5,sticky="nw")
+file_entry_add = Entry(data_add)
+file_entry_add.grid(row=4, column=1, padx=5, pady=5, sticky="nw")
+Button(data_add, text="选择文件", command=lambda: file_update(file_entry_add)).grid(row=4, column=2, padx=5, pady=5, sticky="nw")
 
 #保存按钮设置
 button_save_add=Button(data_add,text='保存',command=save)
@@ -389,12 +415,14 @@ finish_edit.grid(row=3, column=3, padx=5, pady=5, sticky="w")
 
 #附件上传设置
 Label(data_edit,text="上传文件路径:",font=('等线',15)).grid(row=4, column=0, padx=5, pady=5, sticky="nw")
-files_edit=Entry(data_edit,textvariable=path).grid(row=4, column=1, padx=5, pady=5,sticky="nw")
-Button(data_edit,text="选择文件",command=file_update).grid(row=4, column=2, padx=5, pady=5,sticky="nw")
+file_entry_edit = Entry(data_edit)
+file_entry_edit.grid(row=4, column=1, padx=5, pady=5, sticky="nw")
+Button(data_edit, text="选择文件", command=lambda: file_update(file_entry_edit)).grid(row=4, column=2, padx=5, pady=5, sticky="nw")
 
 #保存按钮设置
 button_save_edit=Button(data_edit,text='保存修改',command=update_task)
 button_save_edit.grid(row=5, column=2, padx=5, pady=5, sticky="e")
+Button(data_edit, text='打开文件', command=lambda: open_file(file_entry_edit)).grid(row=5, column=1, padx=5, pady=5, sticky="w")
 button_delete = Button(data_edit, text='删除任务', command=delete_task)
 button_delete.grid(row=5, column=3, padx=5, pady=5, sticky="w")
 
