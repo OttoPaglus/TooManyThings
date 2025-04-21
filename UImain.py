@@ -7,21 +7,16 @@ import time
 import datetime
 import sqlite3
 from tkinter import messagebox
-import shutil
 import os
-from PIL import Image, ImageTk
 import subprocess
 
 
 '''全局变量设置'''
 versions="2.0.2"
 version_date="2025年4月"
-current_edit_id = None
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
 datafiles=r'\todofiles'
-once_id=0
-path_=""
 
 def load_data_to_edit(task_id):
     """将数据加载到编辑表单"""
@@ -47,7 +42,7 @@ def load_data_to_edit(task_id):
             title_edit.insert(0, task_data[1])  # title字段
             content_edit.insert(END, task_data[2])  # text字段
             date_edit.insert(0, task_data[4])  # deadline字段
-            branch_edit.insert(END, task_data[6])
+            branch_edit.insert(END, task_data[6] if task_data[6] else "")
 
             # 设置优先级
             level_str = things_level_dic.get(task_data[5], '重要并且紧急')
@@ -73,26 +68,25 @@ def file_update(entry_widget):
     if file_path:
         entry_widget.delete(0, END)
         entry_widget.insert(0, file_path)
-
 def file_save(file_path):
     if not os.path.isfile(file_path):
         raise FileNotFoundError("文件路径无效，请重新选择有效的文件。")
     return file_path
-
 def save():
     title = title_entry.get()
     content = content_entry.get("1.0", "end-1c")
     date = date_entry.get()
     level = things_level_dic_op[level_entry.get()]
-    branch = branch_entry.get()
-    file_path = file_entry_add.get()
-    location = file_save(file_path)
+    branch = branch_entry.get() or None  # 允许为空
+    file_path = file_entry_add.get() or None  # 允许为空
 
-    try:
-        location = file_save(title)
-    except FileNotFoundError as fe:
-        messagebox.showerror("文件错误", str(fe))
-        return  # 不保存，直接返回
+    location = None
+    if file_path:
+        try:
+            location = file_save(file_path)
+        except FileNotFoundError as fe:
+            messagebox.showerror("文件错误", str(fe))
+            return
 
     # 清空输入框
     title_entry.delete(0, 'end')
@@ -104,7 +98,8 @@ def save():
     try:
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO Thingstable(title, deadline, text, level, isfinished, branch, file) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        cursor.execute("""INSERT INTO Thingstable(title, deadline, text, level, isfinished, branch, file)
+                          VALUES (?, ?, ?, ?, ?, ?, ?)""",
                        (title, date, content, level, False, branch, location))
         conn.commit()
         messagebox.showinfo("成功", "成功保存到数据库！")
@@ -115,23 +110,22 @@ def save():
         file_entry_add.delete(0, END)  # 在 save() 成功后清空
         if conn:
             conn.close()
-
 def update_task():
     title = title_edit.get()
     content = content_edit.get("1.0", "end-1c")
     deadline = date_edit.get()
     level = things_level_dic_op[level_edit.get()]
     isfinish = 1 if finish_edit.get() == '已完成' else 0
-    branch = branch_edit.get()
-    file_path = file_entry_edit.get()
-    location = file_save(file_path)
+    branch = branch_edit.get() or None
+    file_path = file_entry_edit.get() or None
 
-    file_path = file_entry_edit.get()
-    try:
-        location = file_save(file_path)
-    except FileNotFoundError as fe:
-        messagebox.showerror("文件错误", str(fe))
-        return
+    location = None
+    if file_path:
+        try:
+            location = file_save(file_path)
+        except FileNotFoundError as fe:
+            messagebox.showerror("文件错误", str(fe))
+            return
 
     try:
         conn = sqlite3.connect("Thingsdatabase.db")
@@ -158,7 +152,6 @@ def update_task():
         file_entry_edit.delete(0, END)  # 在 update_task() 成功后清空
         if conn:
             conn.close()
-
 def on_treeview_double_click(event):
     """处理Treeview双击事件"""
     selected_item = txtree.selection()
@@ -166,8 +159,6 @@ def on_treeview_double_click(event):
         item = selected_item[0]
         task_id = txtree.item(item, "tags")[0]
         load_data_to_edit(task_id)
-
-
 def delete_task():
     """删除当前编辑的任务"""
     global current_edit_id
@@ -208,7 +199,6 @@ def delete_task():
         if conn:
             conn.close()
         current_edit_id = None
-
 def open_file(entry_widget):
     file_path = entry_widget.get()
     if not os.path.isfile(file_path):
@@ -224,7 +214,6 @@ def open_file(entry_widget):
             messagebox.showwarning("不支持", "当前系统暂不支持打开文件操作")
     except Exception as e:
         messagebox.showerror("打开失败", f"无法打开文件:\n{str(e)}")
-
 def update_treeview(event):
     # 清空当前表格数据
     for item in txtree.get_children():
@@ -261,7 +250,6 @@ def update_treeview(event):
     finally:
         cursor.close()
         conn.close()
-
 def on_tab_changed(event):
     current_tab = note.select()
 
