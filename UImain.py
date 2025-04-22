@@ -265,7 +265,7 @@ def search_branch():
     for item in txtree.get_children():
         txtree.delete(item)
     try:
-        cursor.execute("SELECT id, title, deadline FROM Thingstable WHERE branch=?", (branch,))
+        cursor.execute("SELECT id, title, deadline FROM Thingstable WHERE branch LIKE ?", ('%' + branch + '%',))
         for row in cursor.fetchall():
             txtree.insert('', 'end',
                           values=(row[1], row[2]),  # 显示标题和截止日期
