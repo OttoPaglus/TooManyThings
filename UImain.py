@@ -143,6 +143,7 @@ def update_task():
         content_edit.delete('1.0', END)
         date_edit.delete(0, END)
         level_edit.set('')
+        branch_edit.delete(0, END)
         finish_edit.set('')
 
         messagebox.showinfo("成功", "任务更新成功！")
