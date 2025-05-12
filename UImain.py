@@ -12,8 +12,8 @@ import subprocess
 
 
 '''全局变量设置'''
-versions="2.0.2"
-version_date="2025年4月"
+versions="2.1.0"
+version_date="2025年5月"
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
 datafiles=r'\todofiles'
@@ -251,12 +251,7 @@ def update_treeview(event):
     finally:
         cursor.close()
         conn.close()
-def on_tab_changed(event):
-    current_tab = note.select()
-
-    # 方法1：通过选项卡文本判断
-    tab_text = note.tab(current_tab, "text")
-    if tab_text == "关于":  # 只对指定文本的选项卡生效
+def about():
         txt=f"本程序为待办事项管理系统，\n请在添加待办选项卡中添加待办事项，\n双击待办事项可进行修改和删除操作。\n作者：OttoPaglus\n版本：{versions} \n日期：{version_date}"
         messagebox.showinfo("启动说明",txt)
 def search_branch():
@@ -277,7 +272,26 @@ def search_branch():
         combo.current(7)
         cursor.close()
         conn.close()
-
+def bookwinopen():
+    bookwindow=Tk()
+    bookwindow.title("书目子模块")
+    book_screen_width = bookwindow.winfo_screenwidth()
+    book_screen_height = bookwindow.winfo_screenheight()
+    x = (book_screen_width // 2) - (700 // 2)
+    y = (book_screen_height // 2) - (600// 2)
+    bookwindow.geometry(f"{500}x{300}+{x}+{y}")
+    bookwindow.grid_columnconfigure(1, weight=1)  # 允许列自动扩展
+    bookwindow.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
+def timewinopen():
+    timewindow=Tk()
+    timewindow.title("时间表子模块")
+    book_screen_width = timewindow.winfo_screenwidth()
+    book_screen_height = timewindow.winfo_screenheight()
+    x = (book_screen_width // 2) - (700 // 2)
+    y = (book_screen_height // 2) - (600// 2)
+    timewindow.geometry(f"{500}x{300}+{x}+{y}")
+    timewindow.grid_columnconfigure(1, weight=1)  # 允许列自动扩展
+    timewindow.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
 
 
 '''主窗口设置'''
@@ -291,6 +305,7 @@ y = (screen_height // 2) - (600// 2)
 window.geometry(f"{700}x{600}+{x}+{y}")
 window.grid_columnconfigure(1, weight=1)  # 允许列自动扩展
 window.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
+
 
 #不同分类设置
 combo = Combobox(window)
@@ -319,12 +334,11 @@ update_treeview(None)
 #选项卡设置
 note = Notebook(window)
 note.grid(column=0, row=3, columnspan=2, sticky="nsew")
-
 # 添加选项卡的 Frame
 data_add = Frame(note)
 data_edit = Frame(note)
 data_search = Frame(note)
-about_about= Frame(note)
+more_about= Frame(note)
 
 '''data_add模块设置'''
 
@@ -423,10 +437,15 @@ branch_search = Entry(data_search)
 branch_search.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 button_search=Button(data_search,text='搜索',command=search_branch)
 button_search.grid(row=0, column=3, padx=5, pady=5, sticky="e")
+
+'''more_about 选项卡设置'''
+button_book_list=Button(more_about,text="待读书目清单",command=bookwinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
+button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=1,column=0,padx=5,pady=5,sticky="nsew")
+button_about=Button(more_about,text="关于",command=about).grid(row=2,column=0,padx=5,pady=5,sticky="nsew")
+
 # 添加选项卡
 note.add(data_add, text='添加待办')
 note.add(data_edit, text='修改待办')
 note.add(data_search,text="搜索待办")
-note.add(about_about,text='关于')
-note.bind("<<NotebookTabChanged>>", on_tab_changed)
+note.add(more_about,text='奇奇怪怪的试验田')
 window.mainloop()
