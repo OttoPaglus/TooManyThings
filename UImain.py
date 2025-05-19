@@ -12,11 +12,10 @@ import subprocess
 
 
 '''全局变量设置'''
-versions="2.1.0"
+versions="2.1.1"
 version_date="2025年5月"
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
-datafiles=r'\todofiles'
 
 def load_data_to_edit(task_id):
     """将数据加载到编辑表单"""
@@ -282,6 +281,14 @@ def bookwinopen():
     bookwindow.geometry(f"{500}x{300}+{x}+{y}")
     bookwindow.grid_columnconfigure(1, weight=1)  # 允许列自动扩展
     bookwindow.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
+    Label(bookwindow,text="书籍信息录入：",font=("等线",15)).grid(row=0, column=0, sticky=W)
+    #标题录入
+    Label(bookwindow,text="标题*",font=("等线",15)).grid(row=1, column=0, sticky=W)
+    book_title=Entry(bookwindow).grid(row=1, column=1, sticky=W)
+    #ISBN录入
+    Label(bookwindow,text="ISBN*",font=("等线",15)).grid(row=2, column=0, sticky=W)
+    book_isbn=Entry(bookwindow).grid(row=2, column=1, sticky=W)
+    #作者录入
 def timewinopen():
     timewindow=Tk()
     timewindow.title("时间表子模块")
@@ -439,9 +446,10 @@ button_search=Button(data_search,text='搜索',command=search_branch)
 button_search.grid(row=0, column=3, padx=5, pady=5, sticky="e")
 
 '''more_about 选项卡设置'''
-button_book_list=Button(more_about,text="待读书目清单",command=bookwinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
-button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=1,column=0,padx=5,pady=5,sticky="nsew")
-button_about=Button(more_about,text="关于",command=about).grid(row=2,column=0,padx=5,pady=5,sticky="nsew")
+button_book_list=Button(more_about,text="书目录入",command=bookwinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
+#button_book_edit=Button(more_about,text="书目查看与编辑",command=bookwinedit).grid(row=1,column=0,padx=5,pady=5,sticky="nsew")
+button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=2,column=0,padx=5,pady=5,sticky="nsew")
+button_about=Button(more_about,text="关于",command=about).grid(row=3,column=0,padx=5,pady=5,sticky="nsew")
 
 # 添加选项卡
 note.add(data_add, text='添加待办')
