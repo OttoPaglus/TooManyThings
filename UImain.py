@@ -273,22 +273,54 @@ def search_branch():
         conn.close()
 def bookwinopen():
     bookwindow=Tk()
-    bookwindow.title("书目子模块")
+    bookwindow.title("单本书录入")
     book_screen_width = bookwindow.winfo_screenwidth()
     book_screen_height = bookwindow.winfo_screenheight()
     x = (book_screen_width // 2) - (700 // 2)
     y = (book_screen_height // 2) - (600// 2)
-    bookwindow.geometry(f"{500}x{300}+{x}+{y}")
+    bookwindow.geometry(f"{500}x{500}+{x}+{y}")
     bookwindow.grid_columnconfigure(1, weight=1)  # 允许列自动扩展
     bookwindow.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
-    Label(bookwindow,text="书籍信息录入：",font=("等线",15)).grid(row=0, column=0, sticky=W)
+    Label(bookwindow,text="书籍信息录入：",font=("等线",25)).grid(row=0, column=0, sticky=W)
+    Label(bookwindow, text="基本信息", font=("等线", 20)).grid(row=1, column=0, sticky=W)
     #标题录入
-    Label(bookwindow,text="标题*",font=("等线",15)).grid(row=1, column=0, sticky=W)
-    book_title=Entry(bookwindow).grid(row=1, column=1, sticky=W)
+    Label(bookwindow,text="书籍标题*",font=("等线",15)).grid(row=2, column=0, sticky=W)
+    book_title=Entry(bookwindow).grid(row=2, column=1, sticky=W)
     #ISBN录入
-    Label(bookwindow,text="ISBN*",font=("等线",15)).grid(row=2, column=0, sticky=W)
-    book_isbn=Entry(bookwindow).grid(row=2, column=1, sticky=W)
+    Label(bookwindow,text="ISBN*",font=("等线",15)).grid(row=3, column=0, sticky=W)
+    book_isbn=Entry(bookwindow).grid(row=3, column=1, sticky=W)
     #作者录入
+    Label(bookwindow,text="书籍作者*",font=("等线",15)).grid(row=4, column=0, sticky=W)
+    book_writer=Entry(bookwindow).grid(row=4, column=1, sticky=W)
+    #国籍录入
+    Label(bookwindow,text="作者国籍*",font=("等线",15)).grid(row=5, column=0, sticky=W)
+    book_writernation=Entry(bookwindow).grid(row=5, column=1, sticky=W)
+    Label(bookwindow,text="CIP数据",font=("等线",20)).grid(row=6, column=0, sticky=W)
+    #出版社录入
+    Label(bookwindow,text="出版社*",font=("等线",15)).grid(row=7, column=0, sticky=W)
+    book_publish=Entry(bookwindow).grid(row=7, column=1, sticky=W)
+    #出版时间录入
+    Label(bookwindow,text="出版时间*",font=("等线",15)).grid(row=8, column=0, sticky=W)
+    book_publishtime=Entry(bookwindow).grid(row=8, column=1, sticky=W)
+    #图书馆分类号录入
+    Label(bookwindow,text="中国图书馆分类法*",font=("等线",15)).grid(row=9, column=0, sticky=W)
+    book_reclassCN=Entry(bookwindow).grid(row=9, column=1, sticky=W)
+    #杜威十进制分类法录入
+    Label(bookwindow,text="杜威十进制分类法*",font=("等线",15)).grid(row=10, column=0, sticky=W)
+    book_reclassDV=Entry(bookwindow).grid(row=10, column=1, sticky=W)
+    Label(bookwindow, text="存放购买信息", font=("等线", 20)).grid(row=11, column=0, sticky=W)
+    #存放位置录入
+    Label(bookwindow,text="存放位置",font=("等线",15)).grid(row=12, column=0, sticky=W)
+    book_location=Entry(bookwindow).grid(row=12, column=1, sticky=W)
+    #购买时间录入
+    Label(bookwindow,text="购买时间",font=("等线",15)).grid(row=13, column=0, sticky=W)
+    book_buytime=Entry(bookwindow).grid(row=13, column=1, sticky=W)
+    #购买地点录入
+    Label(bookwindow,text="购买地点",font=("等线",15)).grid(row=14, column=0, sticky=W)
+    book_buylocation=Entry(bookwindow).grid(row=14, column=1, sticky=W)
+    #电子书本地地址录入
+    Label(bookwindow,text="电子书地址",font=("等线",15)).grid(row=15, column=0, sticky=W)
+    ebook_location=Entry(bookwindow).grid(row=15, column=1, sticky=W)
 def timewinopen():
     timewindow=Tk()
     timewindow.title("时间表子模块")
@@ -345,6 +377,7 @@ note.grid(column=0, row=3, columnspan=2, sticky="nsew")
 data_add = Frame(note)
 data_edit = Frame(note)
 data_search = Frame(note)
+book_list = Frame(note)
 more_about= Frame(note)
 
 '''data_add模块设置'''
@@ -445,15 +478,18 @@ branch_search.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 button_search=Button(data_search,text='搜索',command=search_branch)
 button_search.grid(row=0, column=3, padx=5, pady=5, sticky="e")
 
+'''book_list 选项卡设置'''
+button_book_list=Button(book_list,text="书目录入",command=bookwinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
+#button_book_excellist=Button(book_list,text="按表格批量录入书目",command=booklistopen).grid(row=1,column=0,padx=5,pady=5,sticky="nsew")
+#button_book_edit=Button(book_list,text="书目查看与编辑",command=bookwinedit).grid(row=2,column=0,padx=5,pady=5,sticky="nsew")
 '''more_about 选项卡设置'''
-button_book_list=Button(more_about,text="书目录入",command=bookwinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
-#button_book_edit=Button(more_about,text="书目查看与编辑",command=bookwinedit).grid(row=1,column=0,padx=5,pady=5,sticky="nsew")
-button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=2,column=0,padx=5,pady=5,sticky="nsew")
-button_about=Button(more_about,text="关于",command=about).grid(row=3,column=0,padx=5,pady=5,sticky="nsew")
+button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
+button_about=Button(more_about,text="关于",command=about).grid(row=1,column=0,padx=5,pady=5,sticky="nsew")
 
 # 添加选项卡
 note.add(data_add, text='添加待办')
 note.add(data_edit, text='修改待办')
 note.add(data_search,text="搜索待办")
+note.add(book_list,text="个人图书馆管理")
 note.add(more_about,text='奇奇怪怪的试验田')
 window.mainloop()
