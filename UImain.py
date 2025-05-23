@@ -9,13 +9,48 @@ import sqlite3
 from tkinter import messagebox
 import os
 import subprocess
+import openpyxl
+from book_single_entry import BookEntryWindow
+from book_excel_import import BookImportWindow
+
 
 
 '''全局变量设置'''
-versions="2.1.2"
+versions="2.2"
 version_date="2025年5月"
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
+
+def import_books_from_excel():
+    file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])
+    if not file_path:
+        return
+
+    try:
+        workbook = openpyxl.load_workbook(file_path)
+        sheet = workbook.active
+
+        conn = sqlite3.connect("Thingsdatabase.db")
+        cursor = conn.cursor()
+
+        inserted_count = 0
+        for row in sheet.iter_rows(min_row=2, values_only=True):  # 跳过标题行
+            if not any(row):
+                continue  # 跳过空行
+
+            cursor.execute("""INSERT INTO book_storlist (
+                Title, ISBN, Writer, Nation, Publisher, Publish_time,
+                ReclassCN, ReclassDV, Location, Buy_time, Buy_location, Ebook_address
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", row)
+            inserted_count += 1
+
+        conn.commit()
+        messagebox.showinfo("导入成功", f"共导入 {inserted_count} 本书籍记录。")
+    except Exception as e:
+        messagebox.showerror("导入失败", f"发生错误：{str(e)}")
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
 def load_data_to_edit(task_id):
     """将数据加载到编辑表单"""
@@ -71,6 +106,56 @@ def file_save(file_path):
     if not os.path.isfile(file_path):
         raise FileNotFoundError("文件路径无效，请重新选择有效的文件。")
     return file_path
+def save_book(book_title_entry, book_isbn_entry, book_writer_entry, book_writernation_entry, book_publish_entry,book_publishtime_entry,book_reclassDV_entry,book_reclassCN_entry,book_location_entry,book_buytime_entry,book_buylocation_entry,ebook_location_entry):
+    book_title = book_title_entry.get()
+    book_isbn = book_isbn_entry.get()
+    book_writer = book_writer_entry.get()
+    book_writernation =  book_writernation_entry.get()
+    book_publish = book_publish_entry.get()
+    book_publishtime = book_publishtime_entry.get()
+    book_reclassDV = book_reclassDV_entry.get()
+    book_reclassCN = book_reclassCN_entry.get()
+    book_location = book_location_entry.get()
+    book_buytime = book_buytime_entry.get() or None
+    book_buylocation = book_buylocation_entry.get() or None
+    ebook_location = ebook_location_entry.get() or None
+
+    location = None
+    if ebook_location:
+        try:
+            location = file_save(ebook_location)
+        except FileNotFoundError as fe:
+            messagebox.showerror("文件错误", str(fe))
+            return
+
+    # 清空输入框
+    book_title_entry.delete(0, 'end')
+    book_isbn_entry.delete(0, 'end')
+    book_writer_entry.delete(0, 'end')
+    book_writernation_entry.delete(0, 'end')
+    book_publish_entry.delete(0, 'end')
+    book_publishtime_entry.delete(0, 'end')
+    book_reclassDV_entry.delete(0, 'end')
+    book_reclassCN_entry.delete(0, 'end')
+    book_location_entry.delete(0, 'end')
+    book_buytime_entry.delete(0, 'end')
+    book_buylocation_entry.delete(0, 'end')
+
+    try:
+        conn = sqlite3.connect("Thingsdatabase.db")
+        cursor = conn.cursor()
+        cursor.execute("""INSERT INTO book_storlist(Title,ISBN,Writer,Nation,Publisher,Publish_time,ReclassCN,ReclassDV,Location,Buy_time,Buy_location,Ebook_address)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                       (book_title,book_isbn,book_writer,book_writernation,book_publish,book_publishtime,book_reclassCN,book_reclassDV,book_location,book_buytime,book_buylocation,location))
+        conn.commit()
+        messagebox.showinfo("成功", "成功保存到数据库！")
+        update_treeview(None)
+    except sqlite3.Error as e:
+        messagebox.showerror("数据库错误", f"保存失败:\n{str(e)}")
+    finally:
+        file_entry_add.delete(0, END)  # 在 save() 成功后清空
+        if conn:
+            conn.close()
 def save():
     title = title_entry.get()
     content = content_entry.get("1.0", "end-1c")
@@ -272,59 +357,9 @@ def search_branch():
         cursor.close()
         conn.close()
 def bookwinopen():
-    bookwindow=Tk()
-    bookwindow.title("单本书录入")
-    book_screen_width = bookwindow.winfo_screenwidth()
-    book_screen_height = bookwindow.winfo_screenheight()
-    x = (book_screen_width // 2) - (700 // 2)
-    y = (book_screen_height // 2) - (600// 2)
-    bookwindow.geometry(f"{500}x{500}+{x}+{y}")
-    bookwindow.grid_columnconfigure(1, weight=1)  # 允许列自动扩展
-    bookwindow.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
-    Label(bookwindow,text="书籍信息录入：",font=("等线",25)).grid(row=0, column=0, sticky=W)
-    Label(bookwindow, text="基本信息", font=("等线", 20)).grid(row=1, column=0, sticky=W)
-    #标题录入
-    Label(bookwindow,text="书籍标题*",font=("等线",15)).grid(row=2, column=0, sticky=W)
-    book_title=Entry(bookwindow).grid(row=2, column=1, sticky=W)
-    #ISBN录入
-    Label(bookwindow,text="ISBN*",font=("等线",15)).grid(row=3, column=0, sticky=W)
-    book_isbn=Entry(bookwindow).grid(row=3, column=1, sticky=W)
-    #作者录入
-    Label(bookwindow,text="书籍作者*",font=("等线",15)).grid(row=4, column=0, sticky=W)
-    book_writer=Entry(bookwindow).grid(row=4, column=1, sticky=W)
-    #国籍录入
-    Label(bookwindow,text="作者国籍*",font=("等线",15)).grid(row=5, column=0, sticky=W)
-    book_writernation=Entry(bookwindow).grid(row=5, column=1, sticky=W)
-    Label(bookwindow,text="CIP数据",font=("等线",20)).grid(row=6, column=0, sticky=W)
-    #出版社录入
-    Label(bookwindow,text="出版社*",font=("等线",15)).grid(row=7, column=0, sticky=W)
-    book_publish=Entry(bookwindow).grid(row=7, column=1, sticky=W)
-    #出版时间录入
-    Label(bookwindow,text="出版时间*",font=("等线",15)).grid(row=8, column=0, sticky=W)
-    book_publishtime=Entry(bookwindow).grid(row=8, column=1, sticky=W)
-    #图书馆分类号录入
-    Label(bookwindow,text="中国图书馆分类法*",font=("等线",15)).grid(row=9, column=0, sticky=W)
-    book_reclassCN=Entry(bookwindow).grid(row=9, column=1, sticky=W)
-    #杜威十进制分类法录入
-    Label(bookwindow,text="杜威十进制分类法*",font=("等线",15)).grid(row=10, column=0, sticky=W)
-    book_reclassDV=Entry(bookwindow).grid(row=10, column=1, sticky=W)
-    Label(bookwindow, text="存放购买信息", font=("等线", 20)).grid(row=11, column=0, sticky=W)
-    #存放位置录入
-    Label(bookwindow,text="存放位置",font=("等线",15)).grid(row=12, column=0, sticky=W)
-    book_location=Entry(bookwindow).grid(row=12, column=1, sticky=W)
-    #购买时间录入
-    Label(bookwindow,text="购买时间",font=("等线",15)).grid(row=13, column=0, sticky=W)
-    book_buytime=Entry(bookwindow).grid(row=13, column=1, sticky=W)
-    #购买地点录入
-    Label(bookwindow,text="购买地点",font=("等线",15)).grid(row=14, column=0, sticky=W)
-    book_buylocation=Entry(bookwindow).grid(row=14, column=1, sticky=W)
-    #电子书本地地址录入
-    Label(bookwindow,text="电子书地址",font=("等线",15)).grid(row=15, column=0, sticky=W)
-    ebook_location=(Entry(bookwindow))
-    ebook_location.grid(row=15, column=1, sticky=W)
-    Button(bookwindow, text='打开文件', command=lambda: file_update(ebook_location)).grid(row=15, column=2, padx=5, pady=5,sticky="w")
-    #book_button_save = Button(data_add, text='保存', command=book_save)
-    #book_button_save.grid(row=5, column=2, sticky="ne", padx=5, pady=5)
+    BookEntryWindow(window)
+def booklistopen():
+    BookImportWindow(window)
 def timewinopen():
     timewindow=Tk()
     timewindow.title("时间表子模块")
@@ -484,7 +519,8 @@ button_search.grid(row=0, column=3, padx=5, pady=5, sticky="e")
 
 '''book_list 选项卡设置'''
 button_book_list=Button(book_list,text="书目录入",command=bookwinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
-#button_book_excellist=Button(book_list,text="按表格批量录入书目",command=booklistopen).grid(row=1,column=0,padx=5,pady=5,sticky="nsew")
+button_book_excellist = Button(book_list, text="按表格批量导入书目", command=booklistopen)
+button_book_excellist.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 #button_book_edit=Button(book_list,text="书目查看与编辑",command=bookwinedit).grid(row=2,column=0,padx=5,pady=5,sticky="nsew")
 '''more_about 选项卡设置'''
 button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
