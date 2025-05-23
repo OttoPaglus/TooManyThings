@@ -12,7 +12,7 @@ import subprocess
 
 
 '''全局变量设置'''
-versions="2.1.1"
+versions="2.1.2"
 version_date="2025年5月"
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
@@ -320,7 +320,11 @@ def bookwinopen():
     book_buylocation=Entry(bookwindow).grid(row=14, column=1, sticky=W)
     #电子书本地地址录入
     Label(bookwindow,text="电子书地址",font=("等线",15)).grid(row=15, column=0, sticky=W)
-    ebook_location=Entry(bookwindow).grid(row=15, column=1, sticky=W)
+    ebook_location=(Entry(bookwindow))
+    ebook_location.grid(row=15, column=1, sticky=W)
+    Button(bookwindow, text='打开文件', command=lambda: file_update(ebook_location)).grid(row=15, column=2, padx=5, pady=5,sticky="w")
+    #book_button_save = Button(data_add, text='保存', command=book_save)
+    #book_button_save.grid(row=5, column=2, sticky="ne", padx=5, pady=5)
 def timewinopen():
     timewindow=Tk()
     timewindow.title("时间表子模块")
