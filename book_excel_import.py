@@ -1,19 +1,26 @@
-# book_excel_import.py
 import sqlite3
 import openpyxl
 from tkinter import Toplevel, Label, Button, filedialog, messagebox, W
 
-class BookImportWindow:
-    def __init__(self, parent):
-        self.window = Toplevel(parent)
-        self.window.title("批量导入书籍")
-        self.window.geometry("500x200")
+
+class BookImportWindow(Toplevel):
+    def __init__(self, parent, on_close_callback=None):
+        super().__init__(parent)
+        self.title("批量导入书籍")
+        self.geometry("500x200")
+        self.on_close_callback = on_close_callback
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
         self.build_widgets()
 
+    def on_close(self):
+        if self.on_close_callback:
+            self.on_close_callback()
+        self.destroy()
+
     def build_widgets(self):
-        Label(self.window, text="批量导入书籍信息（Excel）", font=("等线", 20)).grid(row=0, column=0, columnspan=2, pady=10, sticky=W)
-        Label(self.window, text="请上传包含书籍信息的.xlsx文件\n格式需与数据库字段一致。", font=("等线", 12)).grid(row=1, column=0, columnspan=2, sticky=W, padx=10)
-        Button(self.window, text="选择文件并导入", command=self.import_excel).grid(row=2, column=0, padx=10, pady=20, sticky=W)
+        Label(self, text="批量导入书籍信息（Excel）", font=("等线", 20)).grid(row=0, column=0, columnspan=2, pady=10, sticky=W)
+        Label(self, text="请上传包含书籍信息的.xlsx文件\n格式需与数据库字段一致。", font=("等线", 12)).grid(row=1, column=0, columnspan=2, sticky=W, padx=10)
+        Button(self, text="选择文件并导入", command=self.import_excel).grid(row=2, column=0, padx=10, pady=20, sticky=W)
 
     def import_excel(self):
         file_path = filedialog.askopenfilename(filetypes=[("Excel文件", "*.xlsx")])

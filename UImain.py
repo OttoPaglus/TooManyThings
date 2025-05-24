@@ -18,10 +18,14 @@ from book_editor import BookEditWindow
 
 
 '''全局变量设置'''
-versions="2.3"
+versions="2.4"
 version_date="2025年5月"
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
+book_entry_window_instance = None
+book_import_window_instance = None
+book_epub_window_instance = None
+book_edit_window_instance = None
 
 def import_books_from_excel():
     file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])
@@ -359,9 +363,44 @@ def search_branch():
         cursor.close()
         conn.close()
 def bookwinopen():
-    BookEntryWindow(window)
+    global book_entry_window_instance
+    if book_entry_window_instance is None or not book_entry_window_instance.winfo_exists():
+        def on_close():
+            global book_entry_window_instance
+            book_entry_window_instance = None
+
+        book_entry_window_instance = BookEntryWindow(window, on_close_callback=on_close)
+    else:
+        book_entry_window_instance.lift()
+
 def booklistopen():
-    BookImportWindow(window)
+    global book_import_window_instance
+    if book_import_window_instance is None or not book_import_window_instance.winfo_exists():
+        def on_close():
+            global book_import_window_instance
+            book_import_window_instance = None
+        book_import_window_instance = BookImportWindow(window, on_close_callback=on_close)
+    else:
+        book_import_window_instance.lift()
+
+def bookepubopen():
+    global book_epub_window_instance
+    if book_epub_window_instance is None or not book_epub_window_instance.winfo_exists():
+        def on_close():
+            global book_epub_window_instance
+            book_epub_window_instance = None
+        book_epub_window_instance = BookEpubReader(window, on_close_callback=on_close)
+    else:
+        book_epub_window_instance.lift()
+
+def bookeditopen():
+    global book_edit_window_instance
+    if book_edit_window_instance is None or not book_edit_window_instance.window.winfo_exists():
+        book_edit_window_instance = BookEditWindow(window)
+    else:
+        book_edit_window_instance.window.lift()  # 把窗口置顶
+
+
 def timewinopen():
     timewindow=Tk()
     timewindow.title("时间表子模块")
@@ -520,13 +559,14 @@ button_search=Button(data_search,text='搜索',command=search_branch)
 button_search.grid(row=0, column=3, padx=5, pady=5, sticky="e")
 
 '''book_list 选项卡设置'''
-button_book_list=(Button(book_list,text="书目录入",command=bookwinopen))
-button_book_list.grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
+button_book_list = Button(book_list, text="书目录入", command=bookwinopen)
 button_book_excellist = Button(book_list, text="按表格批量导入书目", command=booklistopen)
+button_book_ebook = Button(book_list, text="电子书录入", command=bookepubopen)
+button_book_edit = Button(book_list, text="书目搜索/编辑/删除", command=bookeditopen)
+
+button_book_list.grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
 button_book_excellist.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
-button_book_ebook=(Button(book_list,text="EPUB格式录入",command=lambda: BookEpubReader(window)))
 button_book_ebook.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
-button_book_edit = Button(book_list, text="书目搜索/编辑/删除", command=lambda: BookEditWindow(window))
 button_book_edit.grid(row=3, column=0, padx=5, pady=5, sticky="nsew")
 
 '''more_about 选项卡设置'''

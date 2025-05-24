@@ -1,52 +1,78 @@
-# book_epub_reader.py
+# ===== 统一导入区 =====
 import os
 import sqlite3
-from tkinter import Toplevel, Text, Scrollbar, Button, filedialog, messagebox, RIGHT, Y, LEFT, BOTH, END
+import zipfile
+from io import BytesIO
+
+from tkinter import (
+    Toplevel, Text, Scrollbar, Button, filedialog,
+    messagebox, RIGHT, Y, LEFT, BOTH, END
+)
+
 from ebooklib import epub
 from bs4 import BeautifulSoup
+from lxml import etree
+import mobi
+import fitz  # PyMuPDF
 
-class BookEpubReader:
-    def __init__(self, parent):
-        self.window = Toplevel(parent)
-        self.window.title("EPUB 阅读器")
-        self.window.geometry("800x700")
+# ===== 主类定义 =====
+class BookEpubReader(Toplevel):
+    def __init__(self, parent, on_close_callback=None):
+        super().__init__(parent)
+        self.title("电子书阅读器")
+        self.geometry("800x700")
+        self.on_close_callback = on_close_callback
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
         self.build_widgets()
 
+    def on_close(self):
+        if self.on_close_callback:
+            self.on_close_callback()
+        self.destroy()
+
     def build_widgets(self):
-        scrollbar = Scrollbar(self.window)
-        scrollbar.pack(side=RIGHT, fill=Y)
+        Button(self, text="打开电子书文件（EPUB/PDF/TXT/MOBI）", command=self.open_file).pack(pady=10)
 
-        self.text = Text(self.window, wrap="word", font=("等线", 12), yscrollcommand=scrollbar.set)
+        self.text = Text(self, wrap="word", font=("等线", 12))
         self.text.pack(side=LEFT, fill=BOTH, expand=True)
-        scrollbar.config(command=self.text.yview)
 
-        Button(self.window, text="打开EPUB文件", command=self.open_epub).pack(pady=10)
+        scrollbar = Scrollbar(self, command=self.text.yview)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        self.text.config(yscrollcommand=scrollbar.set)
 
-    def open_epub(self):
-        file_path = filedialog.askopenfilename(filetypes=[("EPUB文件", "*.epub")])
+    def open_file(self):
+        file_path = filedialog.askopenfilename(filetypes=[
+            ("支持的电子书", "*.epub *.pdf *.txt *.mobi"),
+            ("所有文件", "*.*")
+        ])
         if not file_path:
             return
 
-        if not os.path.isfile(file_path) or not file_path.endswith(".epub"):
-            messagebox.showerror("错误", "请选择有效的 EPUB 文件。")
-            return
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext == ".epub":
+            self.open_epub(file_path)
+        elif ext == ".pdf":
+            self.open_pdf(file_path)
+        elif ext == ".txt":
+            self.open_txt(file_path)
+        elif ext == ".mobi":
+            self.open_mobi(file_path)
+        else:
+            messagebox.showerror("不支持的格式", f"不支持的文件类型：{ext}")
 
+    def open_epub(self, file_path):
         try:
-            # 先用 ebooklib 读取尝试
             book = epub.read_epub(file_path)
             content = ""
             for item in book.get_items_of_type(epub.EpubHtml):
                 soup = BeautifulSoup(item.get_body_content(), 'html.parser')
                 content += soup.get_text() + "\n\n"
 
-            # 提取元信息
             metadata = book.metadata.get('DC', {})
             title = metadata.get('title', ['未命名书籍'])[0]
             creator = metadata.get('creator', ['未知作者'])[0]
             publisher = metadata.get('publisher', ['未知出版社'])[0]
-
         except Exception as e:
-            # ebooklib 读取失败时，降级用zipfile+lxml自己解析
             try:
                 content, title, creator, publisher = self.read_epub_fallback(file_path)
             except Exception as ex:
@@ -58,10 +84,6 @@ class BookEpubReader:
         self.insert_into_database(title, creator, publisher, file_path)
 
     def read_epub_fallback(self, file_path):
-        import zipfile
-        from lxml import etree
-        from io import BytesIO
-
         def get_rootfile_path(zipf):
             container_xml = zipf.read('META-INF/container.xml')
             tree = etree.fromstring(container_xml)
@@ -104,7 +126,6 @@ class BookEpubReader:
                     text = extract_text_from_xhtml(xhtml)
                     content += text + "\n\n"
 
-            # 简单尝试用opf里metadata提取元信息
             opf_xml = zipf.read(opf_path)
             tree = etree.fromstring(opf_xml)
             ns_dc = {'dc': 'http://purl.org/dc/elements/1.1/'}
@@ -117,18 +138,49 @@ class BookEpubReader:
 
             return content, title, creator, publisher
 
+    def open_pdf(self, file_path):
+        try:
+            doc = fitz.open(file_path)
+            text = "\n\n".join([page.get_text() for page in doc])
+            self.text.delete(1.0, END)
+            self.text.insert(END, text.strip())
+            self.insert_into_database(os.path.basename(file_path), None, None, file_path)
+        except Exception as e:
+            messagebox.showerror("读取失败", str(e))
+
+    def open_txt(self, file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                text = f.read()
+            self.text.delete(1.0, END)
+            self.text.insert(END, text.strip())
+            self.insert_into_database(os.path.basename(file_path), None, None, file_path)
+        except Exception as e:
+            messagebox.showerror("读取失败", str(e))
+
+    def open_mobi(self, file_path):
+        try:
+            m = mobi.Mobi(file_path)
+            m.parse()
+            html = m.get_raw_html()
+            soup = BeautifulSoup(html, "html.parser")
+            text = soup.get_text()
+            self.text.delete(1.0, END)
+            self.text.insert(END, text.strip())
+            self.insert_into_database(os.path.basename(file_path), None, None, file_path)
+        except Exception as e:
+            messagebox.showerror("读取失败", str(e))
+
     def insert_into_database(self, title, creator, publisher, filepath):
         try:
             conn = sqlite3.connect("Thingsdatabase.db")
             cursor = conn.cursor()
-
             cursor.execute("""INSERT INTO book_storlist (
                 Title, ISBN, Writer, Nation, Publisher, Publish_time,
                 ReclassCN, ReclassDV, Location, Buy_time, Buy_location, Ebook_address
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (title, None, creator, None, publisher, None,
              None, None, None, None, None, filepath))
-
             conn.commit()
             messagebox.showinfo("导入成功", f"书籍《{title}》信息已录入数据库。")
         except Exception as e:
