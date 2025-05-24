@@ -12,11 +12,13 @@ import subprocess
 import openpyxl
 from book_single_entry import BookEntryWindow
 from book_excel_import import BookImportWindow
+from book_epub_reader import BookEpubReader
+from book_editor import BookEditWindow
 
 
 
 '''全局变量设置'''
-versions="2.2"
+versions="2.3"
 version_date="2025年5月"
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
@@ -518,10 +520,15 @@ button_search=Button(data_search,text='搜索',command=search_branch)
 button_search.grid(row=0, column=3, padx=5, pady=5, sticky="e")
 
 '''book_list 选项卡设置'''
-button_book_list=Button(book_list,text="书目录入",command=bookwinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
+button_book_list=(Button(book_list,text="书目录入",command=bookwinopen))
+button_book_list.grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
 button_book_excellist = Button(book_list, text="按表格批量导入书目", command=booklistopen)
 button_book_excellist.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
-#button_book_edit=Button(book_list,text="书目查看与编辑",command=bookwinedit).grid(row=2,column=0,padx=5,pady=5,sticky="nsew")
+button_book_ebook=(Button(book_list,text="EPUB格式录入",command=lambda: BookEpubReader(window)))
+button_book_ebook.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
+button_book_edit = Button(book_list, text="书目搜索/编辑/删除", command=lambda: BookEditWindow(window))
+button_book_edit.grid(row=3, column=0, padx=5, pady=5, sticky="nsew")
+
 '''more_about 选项卡设置'''
 button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
 button_about=Button(more_about,text="关于",command=about).grid(row=1,column=0,padx=5,pady=5,sticky="nsew")

@@ -40,6 +40,8 @@ class BookImportWindow:
             conn.commit()
             messagebox.showinfo("导入成功", f"成功导入 {inserted_count} 本书。")
         except Exception as e:
+            if 'conn' in locals():
+                conn.rollback()
             messagebox.showerror("导入失败", f"出错信息：{str(e)}")
         finally:
             if 'conn' in locals():
