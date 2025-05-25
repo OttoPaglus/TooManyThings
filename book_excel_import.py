@@ -10,6 +10,11 @@ class BookImportWindow(Toplevel):
         self.geometry("500x200")
         self.on_close_callback = on_close_callback
         self.protocol("WM_DELETE_WINDOW", self.on_close)
+
+        # 添加 createdtime 字段与触发器
+        self.ensure_createdtime_column()
+        self.create_book_insert_trigger()
+
         self.build_widgets()
 
     def on_close(self):
@@ -21,6 +26,39 @@ class BookImportWindow(Toplevel):
         Label(self, text="批量导入书籍信息（Excel）", font=("等线", 20)).grid(row=0, column=0, columnspan=2, pady=10, sticky=W)
         Label(self, text="请上传包含书籍信息的.xlsx文件\n格式需与数据库字段一致。", font=("等线", 12)).grid(row=1, column=0, columnspan=2, sticky=W, padx=10)
         Button(self, text="选择文件并导入", command=self.import_excel).grid(row=2, column=0, padx=10, pady=20, sticky=W)
+
+    def ensure_createdtime_column(self):
+        conn = sqlite3.connect("Thingsdatabase.db")
+        cursor = conn.cursor()
+        try:
+            cursor.execute("PRAGMA table_info(book_storlist)")
+            columns = [col[1] for col in cursor.fetchall()]
+            if "createdtime" not in columns:
+                cursor.execute("ALTER TABLE book_storlist ADD COLUMN createdtime TEXT")
+                conn.commit()
+        except Exception as e:
+            print("添加 createdtime 字段失败:", e)
+        finally:
+            conn.close()
+
+    def create_book_insert_trigger(self):
+        conn = sqlite3.connect("Thingsdatabase.db")
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+            CREATE TRIGGER IF NOT EXISTS trg_book_insert
+            AFTER INSERT ON book_storlist
+            BEGIN
+                UPDATE book_storlist
+                SET createdtime = DATETIME('now','+8 hours')
+                WHERE rowid = NEW.rowid;
+            END;
+            """)
+            conn.commit()
+        except sqlite3.Error as e:
+            print("创建触发器失败:", e)
+        finally:
+            conn.close()
 
     def import_excel(self):
         file_path = filedialog.askopenfilename(filetypes=[("Excel文件", "*.xlsx")])
@@ -51,5 +89,7 @@ class BookImportWindow(Toplevel):
                 conn.rollback()
             messagebox.showerror("导入失败", f"出错信息：{str(e)}")
         finally:
+            if 'workbook' in locals():
+                workbook.close()
             if 'conn' in locals():
                 conn.close()

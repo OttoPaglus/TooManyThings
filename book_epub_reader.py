@@ -3,7 +3,7 @@ import os
 import sqlite3
 import zipfile
 from io import BytesIO
-
+import re
 from tkinter import (
     Toplevel, Text, Scrollbar, Button, filedialog,
     messagebox, RIGHT, Y, LEFT, BOTH, END
@@ -22,8 +22,43 @@ class BookEpubReader(Toplevel):
         self.title("电子书阅读器")
         self.geometry("800x700")
         self.on_close_callback = on_close_callback
+        self.ensure_createtime_column()
+        self.create_book_insert_trigger()
         self.protocol("WM_DELETE_WINDOW", self.on_close)
         self.build_widgets()
+
+    def ensure_createtime_column(self):
+        conn = sqlite3.connect("Thingsdatabase.db")
+        cursor = conn.cursor()
+        try:
+            cursor.execute("PRAGMA table_info(book_storlist)")
+            columns = [col[1] for col in cursor.fetchall()]
+            if "createtime" not in columns:
+                cursor.execute("ALTER TABLE book_storlist ADD COLUMN createtime TEXT")
+                conn.commit()
+        except Exception as e:
+            print("添加 createtime 字段失败:", e)
+        finally:
+            conn.close()
+
+    def create_book_insert_trigger(self):
+        conn = sqlite3.connect("Thingsdatabase.db")
+        cursor = conn.cursor()
+        try:
+            cursor.execute("""
+            CREATE TRIGGER IF NOT EXISTS trg_book_insert_time
+            AFTER INSERT ON book_storlist
+            BEGIN
+                UPDATE book_storlist
+                SET createtime = DATETIME('now','+8 hours')
+                WHERE rowid = NEW.rowid;
+            END;
+            """)
+            conn.commit()
+        except sqlite3.Error as e:
+            print("创建触发器失败:", e)
+        finally:
+            conn.close()
 
     def on_close(self):
         if self.on_close_callback:
@@ -31,7 +66,7 @@ class BookEpubReader(Toplevel):
         self.destroy()
 
     def build_widgets(self):
-        Button(self, text="打开电子书文件（EPUB/PDF/TXT/MOBI）", command=self.open_file).pack(pady=10)
+        Button(self, text="打开电子书文件（EPUB）", command=self.open_file).pack(pady=10)
 
         self.text = Text(self, wrap="word", font=("等线", 12))
         self.text.pack(side=LEFT, fill=BOTH, expand=True)
@@ -42,7 +77,7 @@ class BookEpubReader(Toplevel):
 
     def open_file(self):
         file_path = filedialog.askopenfilename(filetypes=[
-            ("支持的电子书", "*.epub *.pdf *.txt *.mobi"),
+            ("支持的电子书", "*.epub"),
             ("所有文件", "*.*")
         ])
         if not file_path:
@@ -79,9 +114,40 @@ class BookEpubReader(Toplevel):
                 messagebox.showerror("读取错误", f"无法读取 EPUB 文件：\n{str(e)}\n备用解析也失败：{str(ex)}")
                 return
 
+        import re
+
+        def split_nation_and_author(creator_raw):
+            """
+            支持多位作者，每位格式如【国】姓名，提取 Nation 与 Author
+            """
+            if not creator_raw:
+                return None, None
+
+            creator_raw = creator_raw.strip()
+            authors = [a.strip() for a in re.split(r'[,/;，；]', creator_raw) if a.strip()]
+
+            nations = []
+            names = []
+
+            for item in authors:
+                match = re.match(r"[【\[]?([^\]】]{1,6})[】\]]?(.*)", item)
+                if match and match.group(2).strip():
+                    nations.append(match.group(1).strip())
+                    names.append(match.group(2).strip())
+                else:
+                    nations.append(None)
+                    names.append(item.strip())
+
+            # 合并为 / 分隔形式（用于入库）
+            nation_str = "/".join([n for n in nations if n])
+            author_str = " / ".join(names)
+
+            return nation_str or None, author_str or None
+
         self.text.delete(1.0, END)
         self.text.insert(END, content.strip())
-        self.insert_into_database(title, creator, publisher, file_path)
+        nation, author = split_nation_and_author(creator)
+        self.insert_into_database(title, author, publisher, file_path, nation)
 
     def read_epub_fallback(self, file_path):
         def get_rootfile_path(zipf):
@@ -171,7 +237,8 @@ class BookEpubReader(Toplevel):
         except Exception as e:
             messagebox.showerror("读取失败", str(e))
 
-    def insert_into_database(self, title, creator, publisher, filepath):
+    def insert_into_database(self, title, author, publisher, filepath, nation=None):
+
         try:
             conn = sqlite3.connect("Thingsdatabase.db")
             cursor = conn.cursor()
@@ -179,8 +246,8 @@ class BookEpubReader(Toplevel):
                 Title, ISBN, Writer, Nation, Publisher, Publish_time,
                 ReclassCN, ReclassDV, Location, Buy_time, Buy_location, Ebook_address
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (title, None, creator, None, publisher, None,
-             None, None, None, None, None, filepath))
+                           (title, None, author, nation, publisher, None,
+                            None, None, None, None, None, filepath))
             conn.commit()
             messagebox.showinfo("导入成功", f"书籍《{title}》信息已录入数据库。")
         except Exception as e:

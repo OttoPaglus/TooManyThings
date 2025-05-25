@@ -38,7 +38,7 @@ class BookEditWindow:
 
         # 详细信息输入框标签和输入框，12个字段
         labels = ["书名", "ISBN", "作者", "国别", "出版社", "出版时间",
-                  "ReclassCN", "ReclassDV", "馆藏地", "购买时间", "购买地点", "电子书地址"]
+                  "ReclassCN", "ReclassDV", "馆藏地", "购买时间", "购买地点", "电子书地址","创建时间"]
         self.entries = {}
 
         for i, label_text in enumerate(labels, start=2):
@@ -48,8 +48,8 @@ class BookEditWindow:
             self.entries[label_text] = entry
 
         # 按钮
-        Button(self.window, text="保存修改", command=self.update_book).grid(row=14, column=1, sticky=E, pady=10, padx=10)
-        Button(self.window, text="删除书籍", command=self.delete_book).grid(row=14, column=0, sticky=W, pady=10, padx=10)
+        Button(self.window, text="保存修改", command=self.update_book).grid(row=15, column=1, sticky=E, pady=10, padx=10)
+        Button(self.window, text="删除书籍", command=self.delete_book).grid(row=15, column=0, sticky=W, pady=10, padx=10)
 
         # 网格扩展
         self.window.grid_rowconfigure(1, weight=1)
@@ -104,13 +104,13 @@ class BookEditWindow:
                 cursor = conn.cursor()
                 cursor.execute("""
                     SELECT Title, ISBN, Writer, Nation, Publisher, Publish_time,
-                           ReclassCN, ReclassDV, Location, Buy_time, Buy_location, Ebook_address
+                           ReclassCN, ReclassDV, Location, Buy_time, Buy_location, Ebook_address,createtime
                     FROM book_storlist WHERE rowid=?
                 """, (self.selected_id,))
                 row = cursor.fetchone()
                 if row:
                     keys = ["书名", "ISBN", "作者", "国别", "出版社", "出版时间",
-                            "ReclassCN", "ReclassDV", "馆藏地", "购买时间", "购买地点", "电子书地址"]
+                            "ReclassCN", "ReclassDV", "馆藏地", "购买时间", "购买地点", "电子书地址","创建时间"]
                     for key, value in zip(keys, row):
                         entry = self.entries.get(key)
                         if entry:

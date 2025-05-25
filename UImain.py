@@ -18,7 +18,7 @@ from book_editor import BookEditWindow
 
 
 '''全局变量设置'''
-versions="2.4"
+versions="2.5"
 version_date="2025年5月"
 things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
 things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
@@ -26,37 +26,6 @@ book_entry_window_instance = None
 book_import_window_instance = None
 book_epub_window_instance = None
 book_edit_window_instance = None
-
-def import_books_from_excel():
-    file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx")])
-    if not file_path:
-        return
-
-    try:
-        workbook = openpyxl.load_workbook(file_path)
-        sheet = workbook.active
-
-        conn = sqlite3.connect("Thingsdatabase.db")
-        cursor = conn.cursor()
-
-        inserted_count = 0
-        for row in sheet.iter_rows(min_row=2, values_only=True):  # 跳过标题行
-            if not any(row):
-                continue  # 跳过空行
-
-            cursor.execute("""INSERT INTO book_storlist (
-                Title, ISBN, Writer, Nation, Publisher, Publish_time,
-                ReclassCN, ReclassDV, Location, Buy_time, Buy_location, Ebook_address
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", row)
-            inserted_count += 1
-
-        conn.commit()
-        messagebox.showinfo("导入成功", f"共导入 {inserted_count} 本书籍记录。")
-    except Exception as e:
-        messagebox.showerror("导入失败", f"发生错误：{str(e)}")
-    finally:
-        if 'conn' in locals():
-            conn.close()
 
 def load_data_to_edit(task_id):
     """将数据加载到编辑表单"""
@@ -411,6 +380,8 @@ def timewinopen():
     timewindow.geometry(f"{500}x{300}+{x}+{y}")
     timewindow.grid_columnconfigure(1, weight=1)  # 允许列自动扩展
     timewindow.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
+    Label(timewindow,text="开发中请等待下一次版本更新",font=("等线",15)).grid(row=0, column=0, sticky=W)
+
 
 
 '''主窗口设置'''
