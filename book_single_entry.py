@@ -59,9 +59,51 @@ class BookEntryWindow(Toplevel):
             conn.close()
 
     def build_widgets(self):
-        # [保持原有界面构建逻辑不变]
-        # ...
-        pass  # 略去中间 build_widgets 内容，已保留
+        row = 0
+        Label(self, text="书籍信息录入：", font=("等线", 25)).grid(row=row, column=0, sticky=W)
+        row += 1
+        Label(self, text="基本信息", font=("等线", 20)).grid(row=row, column=0, sticky=W)
+        row += 1
+
+        self.entry_title = self._entry(row, "书籍标题*")
+        row += 1
+        self.entry_isbn = self._entry(row, "ISBN*")
+        row += 1
+        self.entry_writer = self._entry(row, "书籍作者*")
+        row += 1
+        self.entry_nation = self._entry(row, "作者国籍*")
+        row += 1
+
+        Label(self,text="CIP数据", font=("等线", 20)).grid(row=row, column=0, sticky=W)
+        row += 1
+
+        self.entry_publisher = self._entry(row, "出版社*")
+        row += 1
+        self.entry_pubtime = self._entry(row, "出版时间*")
+        row += 1
+        self.entry_cn = self._entry(row, "中国图书馆分类法*")
+        row += 1
+        self.entry_dv = self._entry(row, "杜威十进制分类法*")
+        row += 1
+
+        Label(self, text="存放购买信息", font=("等线", 20)).grid(row=row, column=0, sticky=W)
+        row += 1
+
+        self.entry_location = self._entry(row, "存放位置")
+        row += 1
+        self.entry_buytime = self._entry(row, "购买时间")
+        row += 1
+        self.entry_buylocation = self._entry(row, "购买地点")
+        row += 1
+
+        Label(self, text="电子书地址", font=("等线", 15)).grid(row=row, column=0, sticky=W)
+        self.entry_ebook = Entry(self)
+        self.entry_ebook.grid(row=row, column=1, sticky=W)
+        row += 1
+        Button(self, text="选择文件", command=self.select_file).grid(row=row, column=0, padx=5, pady=5,
+                                                                            sticky="w")
+        Button(self, text="保存", command=self.save_book).grid(row=row, column=1, sticky="ne", padx=5,
+                                                                      pady=5)
 
     def _entry(self, row, label):
         Label(self, text=label, font=("等线", 15)).grid(row=row, column=0, sticky=W)

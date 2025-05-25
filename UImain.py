@@ -81,56 +81,6 @@ def file_save(file_path):
     if not os.path.isfile(file_path):
         raise FileNotFoundError("文件路径无效，请重新选择有效的文件。")
     return file_path
-def save_book(book_title_entry, book_isbn_entry, book_writer_entry, book_writernation_entry, book_publish_entry,book_publishtime_entry,book_reclassDV_entry,book_reclassCN_entry,book_location_entry,book_buytime_entry,book_buylocation_entry,ebook_location_entry):
-    book_title = book_title_entry.get()
-    book_isbn = book_isbn_entry.get()
-    book_writer = book_writer_entry.get()
-    book_writernation =  book_writernation_entry.get()
-    book_publish = book_publish_entry.get()
-    book_publishtime = book_publishtime_entry.get()
-    book_reclassDV = book_reclassDV_entry.get()
-    book_reclassCN = book_reclassCN_entry.get()
-    book_location = book_location_entry.get()
-    book_buytime = book_buytime_entry.get() or None
-    book_buylocation = book_buylocation_entry.get() or None
-    ebook_location = ebook_location_entry.get() or None
-
-    location = None
-    if ebook_location:
-        try:
-            location = file_save(ebook_location)
-        except FileNotFoundError as fe:
-            messagebox.showerror("文件错误", str(fe))
-            return
-
-    # 清空输入框
-    book_title_entry.delete(0, 'end')
-    book_isbn_entry.delete(0, 'end')
-    book_writer_entry.delete(0, 'end')
-    book_writernation_entry.delete(0, 'end')
-    book_publish_entry.delete(0, 'end')
-    book_publishtime_entry.delete(0, 'end')
-    book_reclassDV_entry.delete(0, 'end')
-    book_reclassCN_entry.delete(0, 'end')
-    book_location_entry.delete(0, 'end')
-    book_buytime_entry.delete(0, 'end')
-    book_buylocation_entry.delete(0, 'end')
-
-    try:
-        conn = sqlite3.connect("Thingsdatabase.db")
-        cursor = conn.cursor()
-        cursor.execute("""INSERT INTO book_storlist(Title,ISBN,Writer,Nation,Publisher,Publish_time,ReclassCN,ReclassDV,Location,Buy_time,Buy_location,Ebook_address)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                       (book_title,book_isbn,book_writer,book_writernation,book_publish,book_publishtime,book_reclassCN,book_reclassDV,book_location,book_buytime,book_buylocation,location))
-        conn.commit()
-        messagebox.showinfo("成功", "成功保存到数据库！")
-        update_treeview(None)
-    except sqlite3.Error as e:
-        messagebox.showerror("数据库错误", f"保存失败:\n{str(e)}")
-    finally:
-        file_entry_add.delete(0, END)  # 在 save() 成功后清空
-        if conn:
-            conn.close()
 def save():
     title = title_entry.get()
     content = content_entry.get("1.0", "end-1c")
