@@ -46,7 +46,7 @@ class BookEpubReader(Toplevel):
         cursor = conn.cursor()
         try:
             cursor.execute("""
-            CREATE TRIGGER IF NOT EXISTS trg_book_insert_time
+            CREATE TRIGGER IF NOT EXISTS trg_book_insert
             AFTER INSERT ON book_storlist
             BEGIN
                 UPDATE book_storlist
