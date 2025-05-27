@@ -13,7 +13,6 @@ from ebooklib import epub
 from bs4 import BeautifulSoup
 from lxml import etree
 import mobi
-import fitz
 
 # ===== 主类定义 =====
 class BookEpubReader(Toplevel):
@@ -199,16 +198,6 @@ class BookEpubReader(Toplevel):
             publisher = publisher_el.text if publisher_el is not None else '未知出版社'
 
             return content, title, creator, publisher
-
-    def open_pdf(self, file_path):
-        try:
-            doc = fitz.open(file_path)
-            text = "\n\n".join([page.get_text() for page in doc])
-            self.text.delete(1.0, END)
-            self.text.insert(END, text.strip())
-            self.insert_into_database(os.path.basename(file_path), None, None, file_path)
-        except Exception as e:
-            messagebox.showerror("读取失败", str(e))
 
     def open_txt(self, file_path):
         try:
