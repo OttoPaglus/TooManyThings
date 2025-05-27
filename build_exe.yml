@@ -15,7 +15,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.10'  # 使用你项目所需的 Python 版本
+        python-version: '3.12'  # 使用你项目所需的 Python 版本
     
     - name: Install dependencies
       run: |
@@ -25,10 +25,10 @@ jobs:
         
     - name: Run PyInstaller
       run: |
-        pyinstaller --onefile --clean --noconsole your_script.py  # 替换 your_script.py 为你的主脚本
-        
+        pyinstaller main.spec
+          
     - name: Upload artifact
       uses: actions/upload-artifact@v3
-      with:
-        name: executable
-        path: dist/  # PyInstaller 默认输出目录
+        with:
+          name: executable
+          path: dist/  # PyInstaller 默认输出目录
