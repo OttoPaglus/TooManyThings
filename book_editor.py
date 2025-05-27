@@ -36,7 +36,6 @@ class BookEditWindow:
         self.tree.grid(row=1, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
 
-        # 详细信息输入框标签和输入框，12个字段
         labels = ["书名", "ISBN", "作者", "国别", "出版社", "出版时间",
                   "ReclassCN", "ReclassDV", "馆藏地", "购买时间", "购买地点", "电子书地址","创建时间"]
         self.entries = {}
