@@ -2,7 +2,7 @@ import sqlite3
 from tkinter import messagebox
 from datetime import datetime
 from todo_create import TodoTask
-from utils.file_helper import FileHelper
+from file_helper import FileHelper
 
 class TodoEditor:
     def __init__(self, db_path="Thingsdatabase.db"):

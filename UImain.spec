@@ -3,7 +3,7 @@
 
 a = Analysis(
     ['UImain.py'],
-    pathex=['book_epub_reader.py', 'book_excel_import.py', 'book_single_entry.py', 'book_editor.py'],
+    pathex=['book_epub_reader.py', 'book_excel_import.py', 'book_single_entry.py', 'book_editor.py','todo_create.py','todo_edit.py','todo_query.py','todo_search.py','file_helper.py','constant.py'],
     binaries=[],
     datas=[],
     hiddenimports=[],

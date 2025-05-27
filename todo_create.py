@@ -1,7 +1,7 @@
 import sqlite3
 from tkinter import messagebox
 from datetime import datetime
-from utils.file_helper import FileHelper
+from file_helper import FileHelper
 
 class TodoTask:
     def __init__(self, title, content, deadline, level, isfinished=False, branch=None, file=None):

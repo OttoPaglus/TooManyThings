@@ -1,21 +1,15 @@
-import sys
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import scrolledtext
 from tkinter import filedialog
 import time
-import datetime
-import sqlite3
 from tkinter import messagebox
-import os
-import subprocess
-import openpyxl
 
 from todo_create import TodoTask, TodoCreator
 from todo_edit import TodoEditor
 from todo_search import TodoSearcher
 from todo_query import TodoQuery
-from utils.file_helper import FileHelper
+from file_helper import FileHelper
 
 from book_single_entry import BookEntryWindow
 from book_excel_import import BookImportWindow

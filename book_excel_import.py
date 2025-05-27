@@ -1,6 +1,9 @@
 import sqlite3
 import openpyxl
 from tkinter import Toplevel, Label, Button, filedialog, messagebox, W
+import os
+import subprocess
+import sys
 
 class BookImportWindow(Toplevel):
     def __init__(self, parent, on_close_callback=None):
@@ -13,7 +16,7 @@ class BookImportWindow(Toplevel):
         # 添加 createdtime 字段与触发器
         self.ensure_createdtime_column()
         self.create_book_insert_trigger()
-
+        self.example_file_path = os.path.abspath("examples\ex.xlsx")  # 示例路径，可修改
         self.build_widgets()
 
     def on_close(self):
@@ -25,7 +28,7 @@ class BookImportWindow(Toplevel):
         Label(self, text="批量导入书籍信息（Excel）", font=("等线", 20)).grid(row=0, column=0, columnspan=2, pady=10, sticky=W)
         Label(self, text="请上传包含书籍信息的.xlsx文件\n格式需与数据库字段一致。", font=("等线", 12)).grid(row=1, column=0, columnspan=2, sticky=W, padx=10)
         Button(self, text="选择文件并导入", command=self.import_excel).grid(row=2, column=0, padx=10, pady=20, sticky=W)
-
+        Button(self, text="打开样例文件所在文件夹", command=self.open_example_folder).grid(row=2, column=1, padx=10,pady=10, sticky=W)
     def ensure_createdtime_column(self):
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
@@ -39,7 +42,17 @@ class BookImportWindow(Toplevel):
             print("添加 createdtime 字段失败:", e)
         finally:
             conn.close()
-
+    def open_example_folder(self):
+        folder_path = os.path.dirname(self.example_file_path)
+        try:
+            if sys.platform == "win32":
+                os.startfile(folder_path)
+            elif sys.platform == "darwin":
+                subprocess.Popen(["open", folder_path])
+            else:
+                subprocess.Popen(["xdg-open", folder_path])
+        except Exception as e:
+            messagebox.showerror("打开失败", f"无法打开文件夹：{str(e)}")
     def create_book_insert_trigger(self):
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
