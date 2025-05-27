@@ -1,60 +1,65 @@
 name: Build EXE with PyInstaller
 
+# 👇 添加写入权限
+permissions:
+  contents: write
+
 on:
   push:
-    branches: [ master ]  # 推送到 master 分支时触发
-    paths: [ '**.py' ]     # 仅 Python 文件变化时触发
-  workflow_dispatch:        # 支持手动触发
+    branches: [ master ]
+    paths: [ '**.py' ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
-    - name: Install dependencies and remove pathlib
+    - name: Remove incompatible pathlib
+      run: python -m pip uninstall -y pathlib
+
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip uninstall -y pathlib || true
+        pip uninstall -y pathlib
         pip install pyinstaller
         pip install -r requirements.txt
 
     - name: Run PyInstaller
-      run: pyinstaller UImain.spec
+      run: |
+        pyinstaller UImain.spec
 
     - name: Create ZIP archive
       run: |
         powershell Compress-Archive -Path dist\* -DestinationPath packaged.zip
 
-    - name: Upload ZIP artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: packaged-exe
         path: packaged.zip
 
-    - name: Checkout release branch
-      uses: actions/checkout@v4
-      with:
-        ref: release  # 切换到 release 分支
-        path: release_branch
-
-    - name: Copy zip to release branch folder
+    - name: Clone release branch
       run: |
-        mkdir release_branch\release
-        copy packaged.zip release_branch\release\packaged.zip
+        git fetch origin release || git branch release origin/release
+        git switch release || git checkout -b release
+
+    - name: Copy ZIP to release folder
+      run: |
+        mkdir -Force release
+        copy packaged.zip release\packaged.zip
 
     - name: Commit and push to release branch
       run: |
-        cd release_branch
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add release/packaged.zip
-        git commit -m "Update packaged.zip from build"
-        git push origin release
+        git commit -m "Update packaged.zip from build" || echo "No changes to commit"
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} release
