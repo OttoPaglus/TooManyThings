@@ -2,40 +2,33 @@ name: Build EXE with PyInstaller
 
 on:
   push:
-    branches: [ master ]  # 只在推送到 master分支时触发
-    paths: [ '**.py' ]  # 只有 Python 文件变化时才触发
-  workflow_dispatch:
+    branches: [ master ]  # 推送到 master 分支时触发
+    paths: [ '**.py' ]     # 仅 Python 文件变化时触发
+  workflow_dispatch:        # 支持手动触发
+
 jobs:
   build:
-    runs-on: windows-latest  # 使用 Windows 运行器，因为要生成 EXE
+    runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4  # 检出代码
-    
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'  # 使用你项目所需的 Python 版本
+        python-version: '3.12'
 
-    - name: Remove incompatible pathlib
-      run: python -m pip uninstall -y pathlib
-
-    - name: Install dependencies
+    - name: Install dependencies and remove pathlib
       run: |
         python -m pip install --upgrade pip
-        pip uninstall -y pathlib  # ← 关键修复
+        pip uninstall -y pathlib || true
         pip install pyinstaller
         pip install -r requirements.txt
 
     - name: Run PyInstaller
-      run: |
-        pyinstaller UImain.spec
-          
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-          name: executable
-          path: dist/  # PyInstaller 默认输出目录
+      run: pyinstaller UImain.spec
+
     - name: Create ZIP archive
       run: |
         powershell Compress-Archive -Path dist\* -DestinationPath packaged.zip
@@ -45,3 +38,23 @@ jobs:
       with:
         name: packaged-exe
         path: packaged.zip
+
+    - name: Checkout release branch
+      uses: actions/checkout@v4
+      with:
+        ref: release  # 切换到 release 分支
+        path: release_branch
+
+    - name: Copy zip to release branch folder
+      run: |
+        mkdir release_branch\release
+        copy packaged.zip release_branch\release\packaged.zip
+
+    - name: Commit and push to release branch
+      run: |
+        cd release_branch
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add release/packaged.zip
+        git commit -m "Update packaged.zip from build"
+        git push origin release
