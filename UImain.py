@@ -10,141 +10,63 @@ from tkinter import messagebox
 import os
 import subprocess
 import openpyxl
+
+from todo_create import TodoTask, TodoCreator
+from todo_edit import TodoEditor
+from todo_search import TodoSearcher
+from todo_query import TodoQuery
+from utils.file_helper import FileHelper
+
 from book_single_entry import BookEntryWindow
 from book_excel_import import BookImportWindow
 from book_epub_reader import BookEpubReader
 from book_editor import BookEditWindow
 
-
+from constant import AppConstants
 
 '''全局变量设置'''
-versions="2.5"
-version_date="2025年5月"
-things_level_dic={0:'重要并且紧急',1:'不重要但紧急',2:'重要但不紧急',3:'不重要不紧急'}
-things_level_dic_op={'重要并且紧急':0,'不重要但紧急':1,'重要但不紧急':2,'不重要不紧急':3}
 book_entry_window_instance = None
 book_import_window_instance = None
 book_epub_window_instance = None
 book_edit_window_instance = None
 
-def load_data_to_edit(task_id):
-    """将数据加载到编辑表单"""
-    conn = sqlite3.connect("Thingsdatabase.db")
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT * FROM Thingstable WHERE id=?", (task_id,))
-        task_data = cursor.fetchone()
-
-        if task_data:
-            # 切换到编辑选项卡
-            note.select(data_edit)
-
-            # 清除旧数据
-            title_edit.delete(0, END)
-            content_edit.delete('1.0', END)
-            date_edit.delete(0, END)
-            branch_edit.delete(0, END)
-            #path.set("")
-
-            time.sleep(0.1)
-            # 填充数据
-            title_edit.insert(0, task_data[1])  # title字段
-            content_edit.insert(END, task_data[2])  # text字段
-            date_edit.insert(0, task_data[4])  # deadline字段
-            branch_edit.insert(END, task_data[6] if task_data[6] else "")
-
-            # 设置优先级
-            level_str = things_level_dic.get(task_data[5], '重要并且紧急')
-            level_edit.set(level_str)
-
-            # 设置完成状态
-            finish_edit.set('未完成')
-
-            # 保存当前编辑的ID到全局变量
-            global current_edit_id
-            current_edit_id = task_id
-
-    except sqlite3.Error as e:
-        messagebox.showerror("错误", f"加载数据失败:\n{str(e)}")
-    finally:
-        # 设置文件路径输入框
-        file_entry_edit.delete(0, END)
-        file_entry_edit.insert(0, task_data[7] if task_data[7] else "")
-        cursor.close()
-        conn.close()
-def file_update(entry_widget):
-    file_path = filedialog.askopenfilename()
-    if file_path:
-        entry_widget.delete(0, END)
-        entry_widget.insert(0, file_path)
-def file_save(file_path):
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError("文件路径无效，请重新选择有效的文件。")
-    return file_path
 def save():
     title = title_entry.get()
     content = content_entry.get("1.0", "end-1c")
     date = date_entry.get()
-    level = things_level_dic_op[level_entry.get()]
-    branch = branch_entry.get() or None  # 允许为空
-    file_path = file_entry_add.get() or None  # 允许为空
+    level = AppConstants.THINGS_LEVEL_DIC_OP[level_entry.get()]
+    branch = branch_entry.get() or None
+    file_path = file_entry_add.get() or None
 
-    location = None
-    if file_path:
-        try:
-            location = file_save(file_path)
-        except FileNotFoundError as fe:
-            messagebox.showerror("文件错误", str(fe))
-            return
+    task = TodoTask(title, content, date, level, False, branch, file_path)
 
-    # 清空输入框
-    title_entry.delete(0, 'end')
-    content_entry.delete('1.0', 'end')
-    date_entry.delete(0, 'end')
-    branch_entry.delete(0, 'end')
-    level_entry.set('')
-
-    try:
-        conn = sqlite3.connect("Thingsdatabase.db")
-        cursor = conn.cursor()
-        cursor.execute("""INSERT INTO Thingstable(title, deadline, text, level, isfinished, branch, file)
-                          VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                       (title, date, content, level, False, branch, location))
-        conn.commit()
-        messagebox.showinfo("成功", "成功保存到数据库！")
+    creator = TodoCreator()
+    if creator.save_task(task):
+        # 清空表单
+        title_entry.delete(0, 'end')
+        content_entry.delete('1.0', 'end')
+        date_entry.delete(0, 'end')
+        branch_entry.delete(0, 'end')
+        level_entry.set('')
+        file_entry_add.delete(0, 'end')
         update_treeview(None)
-    except sqlite3.Error as e:
-        messagebox.showerror("数据库错误", f"保存失败:\n{str(e)}")
-    finally:
-        file_entry_add.delete(0, END)  # 在 save() 成功后清空
-        if conn:
-            conn.close()
 def update_task():
-    title = title_edit.get()
-    content = content_edit.get("1.0", "end-1c")
-    deadline = date_edit.get()
-    level = things_level_dic_op[level_edit.get()]
-    isfinish = 1 if finish_edit.get() == '已完成' else 0
-    branch = branch_edit.get() or None
-    file_path = file_entry_edit.get() or None
+    if not current_edit_id:
+        messagebox.showwarning("警告", "当前没有选中的任务")
+        return
 
-    location = None
-    if file_path:
-        try:
-            location = file_save(file_path)
-        except FileNotFoundError as fe:
-            messagebox.showerror("文件错误", str(fe))
-            return
+    task = TodoTask(
+        title=title_edit.get(),
+        content=content_edit.get("1.0", "end-1c"),
+        deadline=date_edit.get(),
+        level=AppConstants.THINGS_LEVEL_DIC_OP[level_edit.get()],
+        isfinished=(finish_edit.get() == '已完成'),
+        branch=branch_edit.get() or None,
+        file=file_entry_edit.get() or None
+    )
 
-    try:
-        conn = sqlite3.connect("Thingsdatabase.db")
-        cursor = conn.cursor()
-        cursor.execute("""UPDATE Thingstable 
-                          SET title=?, text=?, deadline=?, level=?, isfinished=?, branch=?, file=? 
-                          WHERE id=?""",
-                       (title, content, deadline, level, isfinish, branch, location, current_edit_id))
-        conn.commit()
-
+    editor = TodoEditor()
+    if editor.update_task(task, current_edit_id):
         update_treeview(None)
         note.select(data_add)
 
@@ -154,14 +76,66 @@ def update_task():
         level_edit.set('')
         branch_edit.delete(0, END)
         finish_edit.set('')
+        file_entry_edit.delete(0, END)
+def load_data_to_edit(task_id):
+    editor = TodoEditor()
+    task, _ = editor.load_task(task_id)
 
-        messagebox.showinfo("成功", "任务更新成功！")
-    except sqlite3.Error as e:
-        messagebox.showerror("数据库错误", f"更新失败:\n{str(e)}")
-    finally:
-        file_entry_edit.delete(0, END)  # 在 update_task() 成功后清空
-        if conn:
-            conn.close()
+    if task:
+        global current_edit_id
+        current_edit_id = task_id
+        note.select(data_edit)
+
+        title_edit.delete(0, END)
+        content_edit.delete('1.0', END)
+        date_edit.delete(0, END)
+        branch_edit.delete(0, END)
+        file_entry_edit.delete(0, END)
+
+        title_edit.insert(0, task.title)
+        content_edit.insert(END, task.content)
+        date_edit.insert(0, task.deadline)
+        branch_edit.insert(END, task.branch or "")
+        file_entry_edit.insert(0, task.file or "")
+        level_edit.set(AppConstants.THINGS_LEVEL_DIC.get(task.level, '重要并且紧急'))
+        finish_edit.set('已完成' if task.isfinished else '未完成')
+def delete_task():
+    global current_edit_id
+    if not current_edit_id:
+        messagebox.showwarning("警告", "请先选择要删除的任务")
+        return
+    if not messagebox.askyesno("确认删除", "确定要删除这个任务吗？"):
+        return
+    editor = TodoEditor()
+    if editor.delete_task(current_edit_id):
+        update_treeview(None)
+        title_edit.delete(0, END)
+        content_edit.delete('1.0', END)
+        date_edit.delete(0, END)
+        level_edit.set('')
+        finish_edit.set('')
+        file_entry_edit.delete(0, END)
+        branch_edit.delete(0, END)
+        note.select(data_add)
+        current_edit_id = None
+def search_branch():
+    branch = branch_search.get()
+    searcher = TodoSearcher()
+    results = searcher.search_by_branch(branch)
+
+    # 清空现有树表
+    for item in txtree.get_children():
+        txtree.delete(item)
+
+    # 插入结果
+    for row in results:
+        txtree.insert('', 'end', values=(row[1], row[2]), tags=(row[0],))
+    combo.current(7)
+def file_update(entry_widget):
+    file_path = filedialog.askopenfilename()
+    if file_path:
+        entry_widget.delete(0, END)
+        entry_widget.insert(0, file_path)
 def on_treeview_double_click(event):
     """处理Treeview双击事件"""
     selected_item = txtree.selection()
@@ -169,118 +143,22 @@ def on_treeview_double_click(event):
         item = selected_item[0]
         task_id = txtree.item(item, "tags")[0]
         load_data_to_edit(task_id)
-def delete_task():
-    """删除当前编辑的任务"""
-    global current_edit_id
-
-    if not current_edit_id:
-        messagebox.showwarning("警告", "请先选择要删除的任务")
-        return
-
-    # 确认对话框
-    if not messagebox.askyesno("确认删除", "确定要删除这个任务吗？"):
-        return
-
-    try:
-        conn = sqlite3.connect("Thingsdatabase.db")
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM Thingstable WHERE id=?", (current_edit_id,))
-        conn.commit()
-
-        # 更新显示
-        update_treeview(None)
-
-        # 清除编辑数据
-        title_edit.delete(0, END)
-        content_edit.delete('1.0', END)
-        date_edit.delete(0, END)
-        level_edit.set('')
-        finish_edit.set('')
-
-        # 切换回添加选项卡
-        note.select(data_add)
-
-        messagebox.showinfo("成功", "任务已删除")
-        update_treeview(None)
-    except sqlite3.Error as e:
-        conn.rollback()
-        messagebox.showerror("错误", f"删除失败: {str(e)}")
-    finally:
-        if conn:
-            conn.close()
-        current_edit_id = None
 def open_file(entry_widget):
-    file_path = entry_widget.get()
-    if not os.path.isfile(file_path):
-        messagebox.showerror("错误", "文件路径无效或文件不存在，请检查路径")
-        return
-    try:
-        if os.name == 'nt':  # Windows
-            os.startfile(file_path)
-        elif os.name == 'posix':  # macOS/Linux
-            opener = 'open' if sys.platform == 'darwin' else 'xdg-open'
-            subprocess.run([opener, file_path])
-        else:
-            messagebox.showwarning("不支持", "当前系统暂不支持打开文件操作")
-    except Exception as e:
-        messagebox.showerror("打开失败", f"无法打开文件:\n{str(e)}")
+    FileHelper.open_file(entry_widget.get())
 def update_treeview(event):
-    # 清空当前表格数据
-    for item in txtree.get_children():
-        txtree.delete(item)
-
-    # 获取当前选中的分类
     selected_category = combo.get()
+    query = TodoQuery()
+    result = query.fetch_tasks_by_category(selected_category, AppConstants.THINGS_LEVEL_DIC_OP)
 
-    # 连接数据库
-    conn = sqlite3.connect("Thingsdatabase.db")
-    cursor = conn.cursor()
+    txtree.delete(*txtree.get_children())
 
-    try:
-        # 修改所有查询语句，包含id字段
-        if selected_category == '今日待办事项':
-            today = datetime.date.today().strftime("%Y-%m-%d")
-            cursor.execute("SELECT id, title, deadline FROM Thingstable WHERE deadline=? AND isfinished=0", (today,))
-        elif selected_category == '全部待办事项':
-            cursor.execute("SELECT id, title, deadline FROM Thingstable WHERE isfinished=0")
-        elif selected_category == '已经完成事项':
-            cursor.execute("SELECT id, title, deadline FROM Thingstable WHERE isfinished=1")
-        else:
-            level = things_level_dic_op[selected_category]
-            cursor.execute("SELECT id, title, deadline FROM Thingstable WHERE level=? AND isfinished=0", (level,))
-
-        # 插入数据时保存id到tags
-        for row in cursor.fetchall():
-            txtree.insert('', 'end',
-                          values=(row[1], row[2]),  # 显示标题和截止日期
-                          tags=(row[0],))  # 存储ID到tags属性
-
-    except Exception as e:
-        messagebox.showerror("错误", f"数据库操作出错:\n{str(e)}")
-    finally:
-        cursor.close()
-        conn.close()
+    for row in result:
+        txtree.insert('', 'end',
+                      values=(row[1], row[2]),
+                      tags=(row[0],))
 def about():
-        txt=f"本程序为待办事项管理系统，\n请在添加待办选项卡中添加待办事项，\n双击待办事项可进行修改和删除操作。\n作者：OttoPaglus\n版本：{versions} \n日期：{version_date}"
-        messagebox.showinfo("启动说明",txt)
-def search_branch():
-    conn = sqlite3.connect("Thingsdatabase.db")
-    cursor = conn.cursor()
-    branch = branch_search.get()
-    for item in txtree.get_children():
-        txtree.delete(item)
-    try:
-        cursor.execute("SELECT id, title, deadline FROM Thingstable WHERE branch LIKE ?", ('%' + branch + '%',))
-        for row in cursor.fetchall():
-            txtree.insert('', 'end',
-                          values=(row[1], row[2]),  # 显示标题和截止日期
-                          tags=(row[0],))  # 存储ID到tags属性
-    except sqlite3.Error as e:
-        messagebox.showerror("错误", f"加载数据失败:\n{str(e)}")
-    finally:
-        combo.current(7)
-        cursor.close()
-        conn.close()
+    messagebox.showinfo("启动说明", AppConstants.about_text())
+
 def bookwinopen():
     global book_entry_window_instance
     if book_entry_window_instance is None or not book_entry_window_instance.winfo_exists():
@@ -319,7 +197,6 @@ def bookeditopen():
     else:
         book_edit_window_instance.window.lift()  # 把窗口置顶
 
-
 def timewinopen():
     timewindow=Tk()
     timewindow.title("时间表子模块")
@@ -349,7 +226,7 @@ window.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
 
 #不同分类设置
 combo = Combobox(window)
-combo['values'] = ('今日待办事项','全部待办事项','重要并且紧急','不重要但紧急','重要但不紧急','不重要不紧急','已经完成事项','查找结果展示')
+combo['values'] = AppConstants.COMBO_VALUES
 combo['state'] = 'readonly'
 combo.current(0)
 combo.grid(column=0, row=0, rowspan=2, sticky="w")
