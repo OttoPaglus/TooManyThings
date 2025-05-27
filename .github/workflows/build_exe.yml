@@ -32,3 +32,12 @@ jobs:
       with:
           name: executable
           path: dist/  # PyInstaller 默认输出目录
+    - name: Create ZIP archive
+      run: |
+        powershell Compress-Archive -Path dist\* -DestinationPath packaged.zip
+
+    - name: Upload ZIP artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: packaged-exe
+        path: packaged.zip
