@@ -1,4 +1,3 @@
-# book_single_entry.py - 加入触发器与字段初始化
 import os
 import sqlite3
 from tkinter import Toplevel, Label, Entry, Button, messagebox, W, END, filedialog
@@ -24,7 +23,6 @@ class BookEntryWindow(Toplevel):
         self.destroy()
 
     def ensure_createdtime_column(self):
-        """确保 book_storlist 表中存在 createdtime 字段"""
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
         try:
@@ -39,7 +37,6 @@ class BookEntryWindow(Toplevel):
             conn.close()
 
     def create_book_insert_trigger(self):
-        """创建插入触发器以自动设置 createdtime 字段"""
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
         try:

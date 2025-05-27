@@ -7,12 +7,6 @@ class TodoQuery:
         self.db_path = db_path
 
     def fetch_tasks_by_category(self, category, level_map):
-        """
-        根据选中的分类查询任务数据
-        :param category: 字符串（如 “全部待办事项”）
-        :param level_map: 等级文本到数字的映射字典
-        :return: [(id, title, deadline), ...]
-        """
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()

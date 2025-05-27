@@ -1,5 +1,3 @@
-# constant.py
-
 class AppConstants:
     VERSION = "1.0"
     VERSION_DATE = "2025年5月"

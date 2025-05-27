@@ -42,7 +42,6 @@ def save():
 
     creator = TodoCreator()
     if creator.save_task(task):
-        # 清空表单
         title_entry.delete(0, 'end')
         content_entry.delete('1.0', 'end')
         date_entry.delete(0, 'end')

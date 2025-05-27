@@ -2,7 +2,6 @@ import sqlite3
 import openpyxl
 from tkinter import Toplevel, Label, Button, filedialog, messagebox, W
 
-
 class BookImportWindow(Toplevel):
     def __init__(self, parent, on_close_callback=None):
         super().__init__(parent)

@@ -9,7 +9,6 @@ class TodoEditor:
         self.db_path = db_path
 
     def load_task(self, task_id):
-        """从数据库加载任务并返回 TodoTask 实例"""
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
@@ -33,14 +32,12 @@ class TodoEditor:
             conn.close()
 
     def update_task(self, task: TodoTask, task_id: int):
-        # 时间格式校验
         try:
             datetime.strptime(task.deadline, "%Y-%m-%d")
         except ValueError:
             messagebox.showerror("时间格式错误", "截止时间格式应为：YYYY-MM-DD，例如：2025-05-28")
             return False
 
-        # 校验文件路径
         if task.file:
             try:
                 task.file = FileHelper.validate_path(task.file)
@@ -48,7 +45,6 @@ class TodoEditor:
                 messagebox.showerror("文件错误", str(e))
                 return False
 
-        # 更新数据库
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()

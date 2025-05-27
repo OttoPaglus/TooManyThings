@@ -13,7 +13,7 @@ from ebooklib import epub
 from bs4 import BeautifulSoup
 from lxml import etree
 import mobi
-import fitz  # PyMuPDF
+import fitz
 
 # ===== 主类定义 =====
 class BookEpubReader(Toplevel):
@@ -117,9 +117,6 @@ class BookEpubReader(Toplevel):
         import re
 
         def split_nation_and_author(creator_raw):
-            """
-            支持多位作者，每位格式如【国】姓名，提取 Nation 与 Author
-            """
             if not creator_raw:
                 return None, None
 
@@ -138,7 +135,6 @@ class BookEpubReader(Toplevel):
                     nations.append(None)
                     names.append(item.strip())
 
-            # 合并为 / 分隔形式（用于入库）
             nation_str = "/".join([n for n in nations if n])
             author_str = " / ".join(names)
 
