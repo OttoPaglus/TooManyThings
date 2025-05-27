@@ -2,7 +2,7 @@ name: Build EXE with PyInstaller
 
 on:
   push:
-    branches: [ main ]  # 只在推送到 main 分支时触发
+    branches: [ master ]  # 只在推送到 main 分支时触发
     paths: [ '**.py' ]  # 只有 Python 文件变化时才触发
 
 jobs:

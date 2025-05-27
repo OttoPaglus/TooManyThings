@@ -19,6 +19,7 @@ from book_editor import BookEditWindow
 from constant import AppConstants
 
 '''全局变量设置'''
+
 book_entry_window_instance = None
 book_import_window_instance = None
 book_epub_window_instance = None
