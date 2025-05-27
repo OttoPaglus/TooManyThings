@@ -16,14 +16,17 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.12'  # 使用你项目所需的 Python 版本
-    
+
+    - name: Remove incompatible pathlib
+      run: python -m pip uninstall -y pathlib
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip uninstall -y pathlib  # ← 强制删除冲突包
+        pip uninstall -y pathlib  # ← 关键修复
         pip install pyinstaller
-        pip install -r requirements.txt  # 如果有其他依赖
-        
+        pip install -r requirements.txt
+
     - name: Run PyInstaller
       run: |
         pyinstaller UImain.spec
