@@ -1,4 +1,3 @@
-# ===== 统一导入区 =====
 import os
 import sqlite3
 import zipfile
@@ -14,7 +13,6 @@ from bs4 import BeautifulSoup
 from lxml import etree
 import mobi
 
-# ===== 主类定义 =====
 class BookEpubReader(Toplevel):
     def __init__(self, parent, on_close_callback=None):
         super().__init__(parent)

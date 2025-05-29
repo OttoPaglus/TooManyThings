@@ -17,7 +17,7 @@ from book_epub_reader import BookEpubReader
 from book_editor import BookEditWindow
 
 from constant import AppConstants
-
+from Ollama_chat import OllamaChatClient
 '''全局变量设置'''
 book_entry_window_instance = None
 book_import_window_instance = None
@@ -202,7 +202,43 @@ def timewinopen():
     timewindow.grid_rowconfigure(3, weight=1)     # 允许行自动扩展
     Label(timewindow,text="开发中请等待下一次版本更新",font=("等线",15)).grid(row=0, column=0, sticky=W)
 
+def ollama_chat_open():
+    chat_window = Toplevel(window)
+    chat_window.title("Ollama 对话窗口")
+    chat_window.geometry("600x700")
 
+    text_area = scrolledtext.ScrolledText(chat_window, wrap="word", font=("等线", 12))
+    text_area.pack(fill="both", expand=True, padx=10, pady=10)
+
+    entry = Entry(chat_window, font=("等线", 12))
+    entry.pack(fill="x", padx=10, pady=5)
+
+    client = OllamaChatClient()  # 调用类
+
+    def send_and_stream():
+        user_input = entry.get().strip()
+        if not user_input:
+            return
+        entry.delete(0, END)
+        text_area.insert(END, f"你：{user_input}\nAI：")
+        text_area.see(END)
+
+        generator = client.stream_chat(user_input)
+
+        def stream_reply():
+            try:
+                chunk = next(generator)
+                text_area.insert(END, chunk)
+                text_area.see(END)
+                chat_window.after(10, stream_reply)
+            except StopIteration:
+                text_area.insert(END, "\n\n")
+                text_area.see(END)
+
+        stream_reply()
+
+    send_btn = Button(chat_window, text="发送", command=send_and_stream)
+    send_btn.pack(pady=5)
 
 '''主窗口设置'''
 
@@ -362,7 +398,9 @@ button_book_edit.grid(row=3, column=0, padx=5, pady=5, sticky="nsew")
 
 '''more_about 选项卡设置'''
 button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
-button_about=Button(more_about,text="关于",command=about).grid(row=1,column=0,padx=5,pady=5,sticky="nsew")
+button_ollama_chat = Button(more_about, text="AI 对话", command=ollama_chat_open)
+button_ollama_chat.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
+button_about=Button(more_about,text="关于",command=about).grid(row=2,column=0,padx=5,pady=5,sticky="nsew")
 
 # 添加选项卡
 note.add(data_add, text='添加待办')
