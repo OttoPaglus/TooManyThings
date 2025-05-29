@@ -29,6 +29,12 @@ class AppConstants:
     )
 
     @staticmethod
+    def chathost():
+        return(
+            "http://localhost:11434"
+        )
+
+    @staticmethod
     def about_text():
         return (
             f"本程序为待办事项管理系统，\n"

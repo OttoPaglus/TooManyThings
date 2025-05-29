@@ -2,19 +2,63 @@ import tkinter as tk
 from tkinter import scrolledtext
 import requests
 import json
+import sqlite3
+import os
+
+from constant import AppConstants
+
+def generate_system_prompt_from_sqlite(db_path, table_name="Thingstable", sample_limit=5):
+    if not os.path.exists(db_path):
+        return None
+
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        # 获取字段
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = [col[1] for col in cursor.fetchall()]
+
+        # 获取样例数据
+        cursor.execute(f"SELECT * FROM {table_name} LIMIT {sample_limit}")
+        rows = cursor.fetchall()
+
+        conn.close()
+
+        # 构建系统提示词
+        prompt = "你是一个智能待办助手，请参考以下历史数据，根据用户输入生成新的待办事项建议：\n\n"
+        prompt += "字段信息：\n"
+        for col in columns:
+            prompt += f"- {col}\n"
+
+        prompt += "\n样例数据：\n"
+        for row in rows:
+            row_text = " | ".join(str(item) for item in row)
+            prompt += f"{row_text}\n"
+
+        prompt += "\n请根据这些信息和用户输入，输出结构合理、格式一致的待办建议。"
+        return prompt
+
+    except Exception as e:
+        return f"提示词生成失败：{e}"
 
 class OllamaChatClient:
-    def __init__(self, model="deepseek-r1:7b", url="http://localhost:11434"):
+    def __init__(self, model="deepseek-r1:7b", url=AppConstants.chathost(), system_prompt=None):
         self.model = model
         self.api_url = f"{url}/api/chat"
         self.messages = []
+        self.system_prompt = system_prompt  # 新增字段
 
     def stream_chat(self, user_input):
-        """生成器：逐步返回 AI 回复的片段"""
-        self.messages.append({"role": "user", "content": user_input})
+        full_messages = []
+        if self.system_prompt:
+            full_messages.append({"role": "system", "content": self.system_prompt})
+        full_messages += self.messages
+        full_messages.append({"role": "user", "content": user_input})
+
         payload = {
             "model": self.model,
-            "messages": self.messages,
+            "messages": full_messages,
             "stream": True
         }
 
@@ -38,12 +82,13 @@ class OllamaChatClient:
                         yield f"[解析错误：{e}]"
             self.messages.append({"role": "assistant", "content": full_reply})
 
+
 # ----------------- Tkinter UI -------------------
 
 class ChatApp:
     def __init__(self, master):
         self.master = master
-        self.master.title("Ollama DeepSeek Chat (流式回复)")
+        self.master.title("Ollama DeepSeek Chat (流式+数据库)")
         self.master.geometry("600x700")
 
         self.client = OllamaChatClient()
@@ -57,6 +102,9 @@ class ChatApp:
 
         self.send_button = tk.Button(master, text="发送", command=self.send_message)
         self.send_button.pack(pady=(0, 10))
+
+        prompt = generate_system_prompt_from_sqlite("Thingsdatabase.db")
+        self.client = OllamaChatClient(system_prompt=prompt)
 
     def send_message(self, event=None):
         user_text = self.user_input.get().strip()
