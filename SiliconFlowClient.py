@@ -31,7 +31,7 @@ def generate_system_prompt_from_sqlite(db_path, table_name="Thingstable", sample
 
 class SiliconFlowClient:
     def __init__(self, api_key=None, model="Qwen/Qwen3-8B", system_prompt=None):
-        self.api_key = api_key or "sk-usaxnlhkworwtpgftpvkgedgwpmcujbzvltufnvbqczxbvxw"
+        self.api_key = api_key or ""
         self.model = model
         self.api_url = "https://api.siliconflow.cn/v1/chat/completions"
         self.messages = []

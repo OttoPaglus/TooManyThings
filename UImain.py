@@ -258,7 +258,7 @@ def siliconflow_chat_open():
     entry.pack(fill="x", padx=10, pady=5)
 
     client = SiliconFlowClient(
-        api_key="sk-usaxnlhkworwtpgftpvkgedgwpmcujbzvltufnvbqczxbvxw",
+        api_key="",
         system_prompt=prompt
     )
 
