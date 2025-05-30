@@ -4,7 +4,7 @@ from tkinter import scrolledtext
 from tkinter import filedialog
 import time
 from tkinter import messagebox
-
+import os #1.1.2测试API代码
 from todo_create import TodoTask, TodoCreator
 from todo_edit import TodoEditor
 from todo_search import TodoSearcher
@@ -18,6 +18,8 @@ from book_editor import BookEditWindow
 
 from constant import AppConstants
 from Ollama_chat import OllamaChatClient
+#from SiliconFlowClient import SiliconFlowClient, generate_system_prompt_from_sqlite #1.1.2测试API代码
+
 '''全局变量设置'''
 book_entry_window_instance = None
 book_import_window_instance = None
@@ -228,17 +230,21 @@ def ollama_chat_open():
         def stream_reply():
             try:
                 chunk = next(generator)
-                text_area.insert(END, chunk)
-                text_area.see(END)
-                chat_window.after(10, stream_reply)
+                if isinstance(chunk, str):
+                    text_area.insert(END, chunk)
+                    text_area.see(END)
+                chat_window.after(10, stream_reply)  # 非阻塞回调
             except StopIteration:
                 text_area.insert(END, "\n\n")
-                text_area.see(END)
+            except Exception as e:
+                text_area.insert(END, f"\n[错误]：{e}\n")
 
+        generator = client.stream_chat(user_input)
         stream_reply()
 
     send_btn = Button(chat_window, text="发送", command=send_and_stream)
     send_btn.pack(pady=5)
+
 
 '''主窗口设置'''
 
@@ -399,8 +405,10 @@ button_book_edit.grid(row=3, column=0, padx=5, pady=5, sticky="nsew")
 '''more_about 选项卡设置'''
 button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
 button_ollama_chat = Button(more_about, text="AI 对话", command=ollama_chat_open)
-button_ollama_chat.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
-button_about=Button(more_about,text="关于",command=about).grid(row=2,column=0,padx=5,pady=5,sticky="nsew")
+#Button(more_about, text="API-AI待办建议", command=siliconflow_chat_open).grid(row=1, column=0, padx=5, pady=5, sticky="nsew") #1.1.2测试API代码
+
+button_ollama_chat.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
+button_about=Button(more_about,text="关于",command=about).grid(row=3,column=0,padx=5,pady=5,sticky="nsew")
 
 # 添加选项卡
 note.add(data_add, text='添加待办')
