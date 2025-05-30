@@ -83,12 +83,6 @@ class BookEpubReader(Toplevel):
         ext = os.path.splitext(file_path)[1].lower()
         if ext == ".epub":
             self.open_epub(file_path)
-        elif ext == ".pdf":
-            self.open_pdf(file_path)
-        elif ext == ".txt":
-            self.open_txt(file_path)
-        elif ext == ".mobi":
-            self.open_mobi(file_path)
         else:
             messagebox.showerror("不支持的格式", f"不支持的文件类型：{ext}")
 
@@ -196,29 +190,6 @@ class BookEpubReader(Toplevel):
             publisher = publisher_el.text if publisher_el is not None else '未知出版社'
 
             return content, title, creator, publisher
-
-    def open_txt(self, file_path):
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                text = f.read()
-            self.text.delete(1.0, END)
-            self.text.insert(END, text.strip())
-            self.insert_into_database(os.path.basename(file_path), None, None, file_path)
-        except Exception as e:
-            messagebox.showerror("读取失败", str(e))
-
-    def open_mobi(self, file_path):
-        try:
-            m = mobi.Mobi(file_path)
-            m.parse()
-            html = m.get_raw_html()
-            soup = BeautifulSoup(html, "html.parser")
-            text = soup.get_text()
-            self.text.delete(1.0, END)
-            self.text.insert(END, text.strip())
-            self.insert_into_database(os.path.basename(file_path), None, None, file_path)
-        except Exception as e:
-            messagebox.showerror("读取失败", str(e))
 
     def insert_into_database(self, title, author, publisher, filepath, nation=None):
 

@@ -20,7 +20,6 @@ from constant import AppConstants
 from Ollama_chat import OllamaChatClient
 #from SiliconFlowClient import SiliconFlowClient, generate_system_prompt_from_sqlite #1.1.2测试API代码
 
-'''全局变量设置'''
 book_entry_window_instance = None
 book_import_window_instance = None
 book_epub_window_instance = None
