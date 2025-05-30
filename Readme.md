@@ -11,7 +11,7 @@ _DevYYYY.MM（Dev版本及其本次开发完成时所属月份）
 
 _Alpha/Beta（标识版本完成度，Alpha为新功能无法正常运行；Beta为功能能够正常运行但是本次更新目标没有开发完毕）
 
-_z（本月本版本第几次更新）
+_z（本月此版本第几次更新）
 
 TooManyThings是基于Python语言及其Tkinter等模块开发的一款个人待办事项平台
 
