@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="54d59482-b2ad-4aec-80d5-ce484433b699" name="更改" comment="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform)); sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo, NoAppException&#10;for module in [&quot;main.py&quot;, &quot;wsgi.py&quot;, &quot;app.py&quot;]:&#10;    try: locals().update(ScriptInfo(app_import_path=module, create_app=None).load_app().make_shell_context()); print(&quot;\nFlask App: %s&quot; % app.import_name); break&#10;    except NoAppException: pass">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform)); sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo, NoAppException&#10;for module in [&quot;main.py&quot;, &quot;wsgi.py&quot;, &quot;app.py&quot;]:&#10;    try: locals().update(ScriptInfo(app_import_path=module, create_app=None).load_app().make_shell_context()); print(&quot;\nFlask App: %s&quot; % app.import_name); break&#10;    except NoAppException: pass" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="release" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;OttoPaglus&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/OttoPaglus/TooManyThings.git&quot;,
+    &quot;accountId&quot;: &quot;2f277156-e937-4e9e-a9bf-c1c3fd6fc92b&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2xc5DW5kCRvTAU7AqZXlGFtoGkd" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.Ollama_chat.executor&quot;: &quot;Run&quot;,
+    &quot;Python.SiliconFlowClient.executor&quot;: &quot;Run&quot;,
+    &quot;Python.UImain.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Field_von_Code/Python_von_Code/Zwei_von_Code/TooManyThngs/Thingsdatabase.db&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\Field_von_Code\Python_von_Code\Zwei_von_Code\TooManyThngs" />
+      <recent name="E:\Field_von_Code\Python_von_Code\Zwei_von_Code\TooManyThngs\.github\workflows" />
+      <recent name="E:\Field_von_Code\Python_von_Code\Zwei_von_Code\TooManyThngs\database" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-PY-243.25659.43" />
+        <option value="bundled-python-sdk-181015f7ab06-4df51de95216-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.25659.43" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="54d59482-b2ad-4aec-80d5-ce484433b699" name="更改" comment="" />
+      <created>1748224403288</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748224403288</updated>
+      <workItem from="1748224404781" duration="1815000" />
+      <workItem from="1748236249911" duration="3216000" />
+      <workItem from="1748246403479" duration="1231000" />
+      <workItem from="1748262067215" duration="28000" />
+      <workItem from="1748348067444" duration="3136000" />
+      <workItem from="1748353017603" duration="1143000" />
+      <workItem from="1748367495463" duration="1646000" />
+      <workItem from="1748369369573" duration="3670000" />
+      <workItem from="1748421061093" duration="657000" />
+      <workItem from="1748497563710" duration="378000" />
+      <workItem from="1748499878389" duration="1238000" />
+      <workItem from="1748536643875" duration="1438000" />
+      <workItem from="1748539036862" duration="170000" />
+      <workItem from="1748575794156" duration="4911000" />
+      <workItem from="1748586984805" duration="1690000" />
+      <workItem from="1748606057669" duration="2984000" />
+      <workItem from="1748622776311" duration="1307000" />
+      <workItem from="1748625735801" duration="131000" />
+    </task>
+    <task id="LOCAL-00001" summary="更新Readme">
+      <option name="closed" value="true" />
+      <created>1748226864368</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1748226864368</updated>
+    </task>
+    <task id="LOCAL-00002" summary="更新Readme">
+      <option name="closed" value="true" />
+      <created>1748238177811</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1748238177811</updated>
+    </task>
+    <task id="LOCAL-00003" summary="更新Readme">
+      <option name="closed" value="true" />
+      <created>1748238214381</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1748238214381</updated>
+    </task>
+    <task id="LOCAL-00004" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748352455463</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1748352455463</updated>
+    </task>
+    <task id="LOCAL-00005" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748354144632</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1748354144632</updated>
+    </task>
+    <task id="LOCAL-00006" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748367505374</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1748367505374</updated>
+    </task>
+    <task id="LOCAL-00007" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748368088642</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1748368088642</updated>
+    </task>
+    <task id="LOCAL-00008" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748368471195</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1748368471195</updated>
+    </task>
+    <task id="LOCAL-00009" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748368717261</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1748368717261</updated>
+    </task>
+    <task id="LOCAL-00010" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748368791974</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1748368791975</updated>
+    </task>
+    <task id="LOCAL-00011" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748368916537</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1748368916537</updated>
+    </task>
+    <task id="LOCAL-00012" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748368937404</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1748368937404</updated>
+    </task>
+    <task id="LOCAL-00013" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748368974125</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1748368974125</updated>
+    </task>
+    <task id="LOCAL-00014" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748369025511</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1748369025511</updated>
+    </task>
+    <task id="LOCAL-00015" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748369085572</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1748369085572</updated>
+    </task>
+    <task id="LOCAL-00016" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748369378377</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1748369378377</updated>
+    </task>
+    <task id="LOCAL-00017" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748369517676</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1748369517676</updated>
+    </task>
+    <task id="LOCAL-00018" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748369567136</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1748369567136</updated>
+    </task>
+    <task id="LOCAL-00019" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748369804830</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1748369804830</updated>
+    </task>
+    <task id="LOCAL-00020" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748369901798</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1748369901799</updated>
+    </task>
+    <task id="LOCAL-00021" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748370000172</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1748370000172</updated>
+    </task>
+    <task id="LOCAL-00022" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748370089044</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1748370089044</updated>
+    </task>
+    <task id="LOCAL-00023" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748370299965</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1748370299965</updated>
+    </task>
+    <task id="LOCAL-00024" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748370358236</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1748370358236</updated>
+    </task>
+    <task id="LOCAL-00025" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748370506536</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1748370506536</updated>
+    </task>
+    <task id="LOCAL-00026" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748371080198</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1748371080198</updated>
+    </task>
+    <task id="LOCAL-00027" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748371420630</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1748371420630</updated>
+    </task>
+    <task id="LOCAL-00028" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748371734417</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1748371734417</updated>
+    </task>
+    <task id="LOCAL-00029" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748372171555</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1748372171555</updated>
+    </task>
+    <task id="LOCAL-00030" summary="全局类化，版本控制，修复问题。程序当前版本 1.0">
+      <option name="closed" value="true" />
+      <created>1748372460509</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1748372460509</updated>
+    </task>
+    <task id="LOCAL-00031" summary="修复问题">
+      <option name="closed" value="true" />
+      <created>1748372968189</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1748372968189</updated>
+    </task>
+    <task id="LOCAL-00032" summary="添加AI集成体，监听窗口http://localhost:11434 版本号v1.1-Dev2025.05-Alpha">
+      <option name="closed" value="true" />
+      <created>1748501087550</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1748501087550</updated>
+    </task>
+    <task id="LOCAL-00033" summary="添加AI集成体，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-1">
+      <option name="closed" value="true" />
+      <created>1748538580195</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1748538580195</updated>
+    </task>
+    <task id="LOCAL-00034" summary="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2">
+      <option name="closed" value="true" />
+      <created>1748607534996</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1748607534996</updated>
+    </task>
+    <task id="LOCAL-00035" summary="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2">
+      <option name="closed" value="true" />
+      <created>1748609563237</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1748609563237</updated>
+    </task>
+    <task id="LOCAL-00036" summary="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2">
+      <option name="closed" value="true" />
+      <created>1748623244719</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1748623244719</updated>
+    </task>
+    <task id="LOCAL-00037" summary="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2">
+      <option name="closed" value="true" />
+      <created>1748624834720</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1748624834720</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="更新Readme" />
+    <MESSAGE value="全局类化，版本控制，修复问题。程序当前版本 1.0" />
+    <MESSAGE value="修复问题" />
+    <MESSAGE value="添加AI集成体，监听窗口http://localhost:11434 版本号v1.1-Dev2025.05-Alpha" />
+    <MESSAGE value="添加AI集成体，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-1" />
+    <MESSAGE value="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/TooManyThngs$Ollama_chat.coverage" NAME="Ollama_chat 覆盖结果" MODIFIED="1748500267340" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TooManyThngs$UImain.coverage" NAME="UImain 覆盖结果" MODIFIED="1748625837757" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TooManyThngs$SiliconFlowClient.coverage" NAME="SiliconFlowClient 覆盖结果" MODIFIED="1748576678799" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>

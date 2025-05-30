@@ -18,7 +18,7 @@ from book_editor import BookEditWindow
 
 from constant import AppConstants
 from Ollama_chat import OllamaChatClient
-#from SiliconFlowClient import SiliconFlowClient, generate_system_prompt_from_sqlite #1.1.2测试API代码
+from SiliconFlowClient import SiliconFlowClient, generate_system_prompt_from_sqlite #1.1.2测试API代码
 
 book_entry_window_instance = None
 book_import_window_instance = None
@@ -244,6 +244,46 @@ def ollama_chat_open():
     send_btn = Button(chat_window, text="发送", command=send_and_stream)
     send_btn.pack(pady=5)
 
+def siliconflow_chat_open():
+    prompt = generate_system_prompt_from_sqlite("Thingsdatabase.db")
+
+    chat_window = Toplevel(window)
+    chat_window.title("硅基流动 AI 待办助手")
+    chat_window.geometry("600x500")
+
+    text_area = scrolledtext.ScrolledText(chat_window, wrap="word", font=("等线", 12))
+    text_area.pack(fill="both", expand=True, padx=10, pady=10)
+
+    entry = Entry(chat_window, font=("等线", 12))
+    entry.pack(fill="x", padx=10, pady=5)
+
+    client = SiliconFlowClient(
+        api_key="sk-usaxnlhkworwtpgftpvkgedgwpmcujbzvltufnvbqczxbvxw",
+        system_prompt=prompt
+    )
+
+    def send_and_stream():
+        user_input = entry.get().strip()
+        if not user_input:
+            return
+        entry.delete(0, END)
+        text_area.insert(END, f"你：{user_input}\nAI：")
+        text_area.see(END)
+
+        generator = client.stream_chat(user_input)
+
+        def stream_reply():
+            try:
+                chunk = next(generator)
+                text_area.insert(END, chunk)
+                text_area.see(END)
+                chat_window.after(10, stream_reply)
+            except StopIteration:
+                text_area.insert(END, "\n\n")
+
+        stream_reply()
+
+    Button(chat_window, text="发送", command=send_and_stream).pack(pady=5)
 
 '''主窗口设置'''
 
