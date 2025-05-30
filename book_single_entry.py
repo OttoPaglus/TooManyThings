@@ -12,7 +12,7 @@ class BookEntryWindow(Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.on_close)
 
         # 初始化数据库字段和触发器
-        self.ensure_createdtime_column()
+        self.ensure_createtime_column()
         self.create_book_insert_trigger()
 
         self.build_widgets()
@@ -22,17 +22,17 @@ class BookEntryWindow(Toplevel):
             self.on_close_callback()
         self.destroy()
 
-    def ensure_createdtime_column(self):
+    def ensure_createtime_column(self):
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
         try:
             cursor.execute("PRAGMA table_info(book_storlist)")
             columns = [col[1] for col in cursor.fetchall()]
-            if "createdtime" not in columns:
-                cursor.execute("ALTER TABLE book_storlist ADD COLUMN createdtime TEXT")
+            if "createtime" not in columns:
+                cursor.execute("ALTER TABLE book_storlist ADD COLUMN createtime TEXT")
                 conn.commit()
         except Exception as e:
-            print("添加 createdtime 字段失败:", e)
+            print("添加 createtime 字段失败:", e)
         finally:
             conn.close()
 
@@ -45,7 +45,7 @@ class BookEntryWindow(Toplevel):
             AFTER INSERT ON book_storlist
             BEGIN
                 UPDATE book_storlist
-                SET createdtime = DATETIME('now', '+8 hours')
+                SET createtime = DATETIME('now', '+8 hours')
                 WHERE rowid = NEW.rowid;
             END;
             """)

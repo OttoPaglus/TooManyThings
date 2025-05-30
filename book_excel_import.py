@@ -13,8 +13,8 @@ class BookImportWindow(Toplevel):
         self.on_close_callback = on_close_callback
         self.protocol("WM_DELETE_WINDOW", self.on_close)
 
-        # 添加 createdtime 字段与触发器
-        self.ensure_createdtime_column()
+        # 添加 createtime 字段与触发器
+        self.ensure_createtime_column()
         self.create_book_insert_trigger()
         self.example_file_path = os.path.abspath("examples\ex.xlsx")  # 示例路径，可修改
         self.build_widgets()
@@ -29,17 +29,17 @@ class BookImportWindow(Toplevel):
         Label(self, text="请上传包含书籍信息的.xlsx文件\n格式需与数据库字段一致。", font=("等线", 12)).grid(row=1, column=0, columnspan=2, sticky=W, padx=10)
         Button(self, text="选择文件并导入", command=self.import_excel).grid(row=2, column=0, padx=10, pady=20, sticky=W)
         Button(self, text="打开样例文件所在文件夹", command=self.open_example_folder).grid(row=2, column=1, padx=10,pady=10, sticky=W)
-    def ensure_createdtime_column(self):
+    def ensure_createtime_column(self):
         conn = sqlite3.connect("Thingsdatabase.db")
         cursor = conn.cursor()
         try:
             cursor.execute("PRAGMA table_info(book_storlist)")
             columns = [col[1] for col in cursor.fetchall()]
-            if "createdtime" not in columns:
-                cursor.execute("ALTER TABLE book_storlist ADD COLUMN createdtime TEXT")
+            if "createtime" not in columns:
+                cursor.execute("ALTER TABLE book_storlist ADD COLUMN createtime TEXT")
                 conn.commit()
         except Exception as e:
-            print("添加 createdtime 字段失败:", e)
+            print("添加 createtime 字段失败:", e)
         finally:
             conn.close()
     def open_example_folder(self):
@@ -62,7 +62,7 @@ class BookImportWindow(Toplevel):
             AFTER INSERT ON book_storlist
             BEGIN
                 UPDATE book_storlist
-                SET createdtime = DATETIME('now','+8 hours')
+                SET createtime = DATETIME('now','+8 hours')
                 WHERE rowid = NEW.rowid;
             END;
             """)
