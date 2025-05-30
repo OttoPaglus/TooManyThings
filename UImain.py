@@ -444,8 +444,7 @@ button_book_edit.grid(row=3, column=0, padx=5, pady=5, sticky="nsew")
 '''more_about 选项卡设置'''
 button_time_list=Button(more_about,text="一日计划安排",command=timewinopen).grid(row=0,column=0,padx=5,pady=5,sticky="nsew")
 button_ollama_chat = Button(more_about, text="AI 对话", command=ollama_chat_open)
-#Button(more_about, text="API-AI待办建议", command=siliconflow_chat_open).grid(row=1, column=0, padx=5, pady=5, sticky="nsew") #1.1.2测试API代码
-
+Button(more_about, text="API-AI待办建议", command=siliconflow_chat_open).grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 button_ollama_chat.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
 button_about=Button(more_about,text="关于",command=about).grid(row=3,column=0,padx=5,pady=5,sticky="nsew")
 
