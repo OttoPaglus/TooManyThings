@@ -14,33 +14,42 @@ def generate_system_prompt_from_sqlite(db_path, table_name="Thingstable", sample
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-
-        # 获取字段
         cursor.execute(f"PRAGMA table_info({table_name})")
         columns = [col[1] for col in cursor.fetchall()]
-
-        # 获取样例数据
         cursor.execute(f"SELECT * FROM {table_name} LIMIT {sample_limit}")
         rows = cursor.fetchall()
-
         conn.close()
 
-        # 构建系统提示词
-        prompt = "你是一个智能待办助手，请参考以下历史数据，根据用户输入生成新的待办事项建议：\n\n"
-        prompt += "字段信息：\n"
-        for col in columns:
-            prompt += f"- {col}\n"
+        prompt = f"""
+你是一个智能任务助手。请根据用户输入生成一个新的待办事项建议。
 
-        prompt += "\n样例数据：\n"
+✅ 请严格按如下 JSON 格式输出，**不需要任何解释、描述或前缀后缀文本**。直接输出完整 JSON 即可。
+
+示例格式：
+
+{{
+  "title": "任务标题",
+  "text": "任务详情描述",
+  "level": "重要紧急",  // 可选项：重要紧急、重要不紧急、不重要紧急、不紧急
+  "deadline": "自动从用户输入中提取的日期,精确到年月日",
+  "isfinished": false,
+  "branch": "提取的活动主题或任务范围，只需要一个",
+  "file": "无关联文件"
+}}
+
+字段信息如下：
+{chr(10).join(f"- {col}" for col in columns)}
+
+以下是数据库中的示例任务数据（仅供参考）：
+"""
         for row in rows:
-            row_text = " | ".join(str(item) for item in row)
-            prompt += f"{row_text}\n"
+            prompt += " | ".join(str(item) for item in row) + "\n"
 
-        prompt += "\n请根据这些信息和用户输入，输出结构合理、格式一致的待办建议。"
+        prompt += "\n用户输入示例可能是任务内容、指令或命令，请你根据上下文合理输出一条结构化的待办 JSON。"
         return prompt
-
     except Exception as e:
-        return f"提示词生成失败：{e}"
+        return f"[系统提示生成失败：{e}]"
+
 
 class OllamaChatClient:
     def __init__(self, model="deepseek-r1:7b", url=AppConstants.chathost(), system_prompt=None):

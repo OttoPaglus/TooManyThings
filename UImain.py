@@ -5,6 +5,8 @@ from tkinter import filedialog
 import time
 from tkinter import messagebox
 import os #1.1.2测试API代码
+import re
+import json
 from todo_create import TodoTask, TodoCreator
 from todo_edit import TodoEditor
 from todo_search import TodoSearcher
@@ -152,6 +154,13 @@ def update_treeview(event):
                       tags=(row[0],))
 def about():
     messagebox.showinfo("启动说明", AppConstants.about_text())
+def extract_first_json(text):
+    try:
+        match = re.search(r'{.*}', text, re.DOTALL)
+        if match:
+            return json.loads(match.group(0))
+    except json.JSONDecodeError:
+        return None
 
 def bookwinopen():
     global book_entry_window_instance
@@ -258,7 +267,7 @@ def siliconflow_chat_open():
     entry.pack(fill="x", padx=10, pady=5)
 
     client = SiliconFlowClient(
-        api_key="",
+        api_key="sk-usaxnlhkworwtpgftpvkgedgwpmcujbzvltufnvbqczxbvxw",
         system_prompt=prompt
     )
 
@@ -275,13 +284,26 @@ def siliconflow_chat_open():
         def stream_reply():
             try:
                 chunk = next(generator)
-                text_area.insert(END, chunk)
-                text_area.see(END)
+                if isinstance(chunk, str):
+                    text_area.insert(END, chunk)
+                    text_area.see(END)
+                # 无论是否获取到内容，都继续调用自身
                 chat_window.after(10, stream_reply)
-            except StopIteration:
-                text_area.insert(END, "\n\n")
 
-        stream_reply()
+            except StopIteration:
+                # ✅ 回复结束，尝试解析为 JSON
+                try:
+                    result = extract_first_json(client._full_reply)  # 推荐：提取有效 JSON
+                    if result:
+                        text_area.insert(END, "\n[已识别为 JSON 对象]\n")
+                    else:
+                        text_area.insert(END, "\n[未识别为 JSON，回复为普通文本]\n")
+                except Exception as e:
+                    text_area.insert(END, f"\n[解析失败：{e}]\n")
+
+            except Exception as e:
+                # ✅ 网络失败、解析中断等错误
+                text_area.insert(END, f"\n[流式响应错误：{e}]\n")
 
     Button(chat_window, text="发送", command=send_and_stream).pack(pady=5)
 

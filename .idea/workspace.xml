@@ -115,7 +115,7 @@
       <workItem from="1748586984805" duration="1690000" />
       <workItem from="1748606057669" duration="2984000" />
       <workItem from="1748622776311" duration="1307000" />
-      <workItem from="1748625735801" duration="2257000" />
+      <workItem from="1748625735801" duration="2544000" />
     </task>
     <task id="LOCAL-00001" summary="更新Readme">
       <option name="closed" value="true" />
@@ -453,7 +453,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748627985176</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2">
+      <option name="closed" value="true" />
+      <created>1748628189428</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1748628189428</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
