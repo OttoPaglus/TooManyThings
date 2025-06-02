@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54d59482-b2ad-4aec-80d5-ce484433b699" name="更改" comment="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.0-Dev2025.06-Alpha-0" />
+    <list default="true" id="54d59482-b2ad-4aec-80d5-ce484433b699" name="更改" comment="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.0-Dev2025.06-Alpha-0">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -117,7 +119,7 @@
       <workItem from="1748622776311" duration="1307000" />
       <workItem from="1748625735801" duration="2544000" />
       <workItem from="1748766801140" duration="2499000" />
-      <workItem from="1748868475916" duration="761000" />
+      <workItem from="1748868475916" duration="4028000" />
     </task>
     <task id="LOCAL-00001" summary="更新Readme">
       <option name="closed" value="true" />
@@ -479,7 +481,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748869083303</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.0-Dev2025.06-Alpha-0">
+      <option name="closed" value="true" />
+      <created>1748869303165</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1748869303165</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
