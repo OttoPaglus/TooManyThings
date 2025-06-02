@@ -1,6 +1,6 @@
 当前版本：v1.0
 
-开发版本：v1.0_Dev2025.05_Alpha_2
+开发版本：v1.0-Dev2025.06-Alpha-1
 
 （版本号说明）
 正式版本：vx.y
@@ -89,6 +89,10 @@ TooManyThings是基于Python语言及其Tkinter等模块开发的一款个人待
 
 ![](imgs/6.png)
 
+在填写完以后，会弹出一个弹窗，此处你可以设置本书计划什么时候完成，如果留空则不添加进待办中去。此功能覆盖了整个书目编辑页面。
+
+![14.png](imgs/14.png)
+
 点击“按表格批量导入书目”，在打开的页面中可以上传 xlsx 文件进行批量录入（注意，xlsx 文件样例为根目录下“ex.xlsx”）
 
 ![](imgs/7.png)
@@ -132,6 +136,7 @@ TooManyThings是基于Python语言及其Tkinter等模块开发的一款个人待
 11. todo_query.py：待办显示
 12. todo_search.py：待办查询
 13. UImain.py：UI主页面
+14. book2todo.py：将传入书籍信息添加到待办事项中
 
 # 三、后续改进
 
