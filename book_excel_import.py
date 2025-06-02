@@ -4,6 +4,7 @@ from tkinter import Toplevel, Label, Button, filedialog, messagebox, W
 import os
 import subprocess
 import sys
+from book2todo import TodoInserter
 
 class BookImportWindow(Toplevel):
     def __init__(self, parent, on_close_callback=None):
@@ -93,7 +94,8 @@ class BookImportWindow(Toplevel):
                     ReclassCN, ReclassDV, Location, Buy_time, Buy_location, Ebook_address
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", row)
                 inserted_count += 1
-
+            todo = TodoInserter()
+            todo.insert_todo(row[0],row[11])
             conn.commit()
             messagebox.showinfo("导入成功", f"成功导入 {inserted_count} 本书。")
         except Exception as e:

@@ -7,7 +7,7 @@ from tkinter import (
     Toplevel, Text, Scrollbar, Button, filedialog,
     messagebox, RIGHT, Y, LEFT, BOTH, END
 )
-
+from book2todo import TodoInserter
 from ebooklib import epub
 from bs4 import BeautifulSoup
 from lxml import etree
@@ -202,6 +202,8 @@ class BookEpubReader(Toplevel):
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                            (title, None, author, nation, publisher, None,
                             None, None, None, None, None, filepath))
+            todo = TodoInserter()
+            todo.insert_todo(title, filepath)
             conn.commit()
             messagebox.showinfo("导入成功", f"书籍《{title}》信息已录入数据库。")
         except Exception as e:

@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from tkinter import Toplevel, Label, Entry, Button, messagebox, W, END, filedialog
+from book2todo import TodoInserter
 
 class BookEntryWindow(Toplevel):
     def __init__(self, parent, on_close_callback=None):
@@ -141,6 +142,8 @@ class BookEntryWindow(Toplevel):
                 Title, ISBN, Writer, Nation, Publisher, Publish_time,
                 ReclassCN, ReclassDV, Location, Buy_time, Buy_location, Ebook_address
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", fields)
+            todo = TodoInserter()
+            todo.insert_todo(fields[0],fields[11])
             conn.commit()
             messagebox.showinfo("成功", "书籍信息已保存（已记录时间）")
         except Exception as e:

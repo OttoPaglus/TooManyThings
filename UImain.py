@@ -291,7 +291,6 @@ def siliconflow_chat_open():
                 chat_window.after(10, stream_reply)
 
             except StopIteration:
-                # ✅ 回复结束，尝试解析为 JSON
                 try:
                     result = extract_first_json(client._full_reply)  # 推荐：提取有效 JSON
                     if result:
@@ -302,7 +301,6 @@ def siliconflow_chat_open():
                     text_area.insert(END, f"\n[解析失败：{e}]\n")
 
             except Exception as e:
-                # ✅ 网络失败、解析中断等错误
                 text_area.insert(END, f"\n[流式响应错误：{e}]\n")
 
     Button(chat_window, text="发送", command=send_and_stream).pack(pady=5)

@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="54d59482-b2ad-4aec-80d5-ce484433b699" name="更改" comment="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2" />
+    <list default="true" id="54d59482-b2ad-4aec-80d5-ce484433b699" name="更改" comment="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.0-Dev2025.06-Alpha-0">
+      <change afterPath="$PROJECT_DIR$/book2todo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UImain.py" beforeDir="false" afterPath="$PROJECT_DIR$/UImain.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/book_epub_reader.py" beforeDir="false" afterPath="$PROJECT_DIR$/book_epub_reader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/book_excel_import.py" beforeDir="false" afterPath="$PROJECT_DIR$/book_excel_import.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/book_single_entry.py" beforeDir="false" afterPath="$PROJECT_DIR$/book_single_entry.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -116,6 +123,8 @@
       <workItem from="1748606057669" duration="2984000" />
       <workItem from="1748622776311" duration="1307000" />
       <workItem from="1748625735801" duration="2544000" />
+      <workItem from="1748766801140" duration="2499000" />
+      <workItem from="1748868475916" duration="330000" />
     </task>
     <task id="LOCAL-00001" summary="更新Readme">
       <option name="closed" value="true" />
@@ -461,7 +470,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748628189428</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.0-Dev2025.06-Alpha-0">
+      <option name="closed" value="true" />
+      <created>1748769286552</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1748769286552</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -485,11 +502,12 @@
     <MESSAGE value="添加AI集成体，监听窗口http://localhost:11434 版本号v1.1-Dev2025.05-Alpha" />
     <MESSAGE value="添加AI集成体，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-1" />
     <MESSAGE value="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2" />
-    <option name="LAST_COMMIT_MESSAGE" value="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.1-Dev2025.05-Alpha-2" />
+    <MESSAGE value="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.0-Dev2025.06-Alpha-0" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加AI集成体API接口，监听窗口变量转入constant.py(http://localhost:11434) 版本号v1.0-Dev2025.06-Alpha-0" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/TooManyThngs$Ollama_chat.coverage" NAME="Ollama_chat 覆盖结果" MODIFIED="1748500267340" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/TooManyThngs$UImain.coverage" NAME="UImain 覆盖结果" MODIFIED="1748627459162" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/TooManyThngs$UImain.coverage" NAME="UImain 覆盖结果" MODIFIED="1748768892113" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/TooManyThngs$SiliconFlowClient.coverage" NAME="SiliconFlowClient 覆盖结果" MODIFIED="1748576678799" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
