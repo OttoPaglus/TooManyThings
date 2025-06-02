@@ -148,6 +148,17 @@ class BookEditWindow:
                 self.entries["电子书地址"].get(),
                 self.selected_id
             ))
+            todotitle = self.entries["书名"].get() + " 阅读计划"
+            cursor.execute("""
+                UPDATE Thingstable SET
+                    title = ?, file = ?
+                WHERE file = ? OR title = ?
+            """, (
+                todotitle,
+                self.entries["电子书地址"].get(),
+                self.entries["电子书地址"].get(),
+                todotitle
+            ))
             conn.commit()
             messagebox.showinfo("修改成功", "书籍信息已更新")
             self.load_books()
@@ -168,6 +179,10 @@ class BookEditWindow:
             conn = sqlite3.connect("Thingsdatabase.db")
             cursor = conn.cursor()
             cursor.execute("DELETE FROM book_storlist WHERE rowid=?", (self.selected_id,))
+            todotitle = self.entries["书名"].get() + " 阅读计划"
+            cursor.execute("""
+                DELETE FROM Thingstable WHERE file = ? OR title = ?
+            """, (self.entries["电子书地址"].get(), todotitle))
             conn.commit()
             messagebox.showinfo("删除成功", "书籍记录已删除")
             for entry in self.entries.values():
