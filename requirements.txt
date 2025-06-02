@@ -1,6 +1,5 @@
 beautifulsoup4==4.13.4
 EbookLib==0.17
-lxml==5.2.1
 lxml==5.2.2
 mobi==0.3.3
 openpyxl==3.1.2

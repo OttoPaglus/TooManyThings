@@ -28,6 +28,7 @@ class DateInputDialog:
     def get_result(self):
         return self.result
 
+
 class TodoInserter:
     def __init__(self, db_path="Thingsdatabase.db"):
         self.db_path = db_path
