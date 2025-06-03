@@ -202,10 +202,11 @@ class BookEpubReader(Toplevel):
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                            (title, None, author, nation, publisher, None,
                             None, None, None, None, None, filepath))
-            todo = TodoInserter()
-            todo.insert_todo(title, filepath)
             conn.commit()
             messagebox.showinfo("导入成功", f"书籍《{title}》信息已录入数据库。")
+            todo = TodoInserter()
+            todo.insert_todo(title, filepath)
+
         except Exception as e:
             if 'conn' in locals():
                 conn.rollback()
